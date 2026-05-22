@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>DtoOrm.MariaDb</PackageId>
+    <Description>MariaDB/MySQL provider for DtoOrm using MySqlConnector.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../DtoOrm.Core/DtoOrm.Core.csproj" />
+    <PackageReference Include="MySqlConnector" Version="2.5.0" />
+  </ItemGroup>
+</Project>

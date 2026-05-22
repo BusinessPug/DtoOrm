@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>DtoOrm.Sample</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/DtoOrm.Core/DtoOrm.Core.csproj" />
+    <ProjectReference Include="../../src/DtoOrm.MariaDb/DtoOrm.MariaDb.csproj" />
+    <ProjectReference Include="../../src/DtoOrm.Generator/DtoOrm.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="dtoorm.schema.json" />
+  </ItemGroup>
+</Project>

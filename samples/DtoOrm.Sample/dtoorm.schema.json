@@ -1,0 +1,38 @@
+{
+  "namespace": "DtoOrm.Sample.Generated",
+  "database": "demo",
+  "tables": [
+    {
+      "dbName": "people",
+      "clrName": "People",
+      "alias": "p",
+      "columns": [
+        { "dbName": "id",            "clrName": "Id",           "clrType": "int",     "dbType": "int",          "nullable": false, "primaryKey": true,  "ordinal": 1 },
+        { "dbName": "first_name",    "clrName": "FirstName",    "clrType": "string",  "dbType": "varchar(100)", "nullable": false, "primaryKey": false, "ordinal": 2 },
+        { "dbName": "last_name",     "clrName": "LastName",     "clrType": "string",  "dbType": "varchar(100)", "nullable": false, "primaryKey": false, "ordinal": 3 },
+        { "dbName": "is_active",     "clrName": "IsActive",     "clrType": "bool",    "dbType": "tinyint(1)",   "nullable": false, "primaryKey": false, "ordinal": 4 },
+        { "dbName": "department_id", "clrName": "DepartmentId", "clrType": "int",     "dbType": "int",          "nullable": true,  "primaryKey": false, "ordinal": 5 }
+      ]
+    },
+    {
+      "dbName": "departments",
+      "clrName": "Departments",
+      "alias": "d",
+      "columns": [
+        { "dbName": "id",   "clrName": "Id",   "clrType": "int",    "dbType": "int",          "nullable": false, "primaryKey": true,  "ordinal": 1 },
+        { "dbName": "name", "clrName": "Name", "clrType": "string", "dbType": "varchar(100)", "nullable": false, "primaryKey": false, "ordinal": 2 }
+      ]
+    },
+    {
+      "dbName": "orders",
+      "clrName": "Orders",
+      "alias": "o",
+      "columns": [
+        { "dbName": "id",        "clrName": "Id",        "clrType": "int",      "dbType": "int",      "nullable": false, "primaryKey": true,  "ordinal": 1 },
+        { "dbName": "person_id", "clrName": "PersonId",  "clrType": "int",      "dbType": "int",      "nullable": false, "primaryKey": false, "ordinal": 2 },
+        { "dbName": "total",     "clrName": "Total",     "clrType": "decimal",  "dbType": "decimal(10,2)", "nullable": false, "primaryKey": false, "ordinal": 3 },
+        { "dbName": "placed_at", "clrName": "PlacedAt",  "clrType": "System.DateTime", "dbType": "datetime", "nullable": false, "primaryKey": false, "ordinal": 4 }
+      ]
+    }
+  ]
+}

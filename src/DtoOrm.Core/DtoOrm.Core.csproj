@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>DtoOrm.Core</PackageId>
+    <Description>DTO-first ORM core: query DSL, parameterized SQL builder, and DTO mapper.</Description>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="samples/DtoOrm.Api/DtoOrm.Api.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
+  <Project Path="samples/DtoOrm.Sample/DtoOrm.Sample.csproj" />
+  <Project Path="src/DtoOrm.Cli/DtoOrm.Cli.csproj" />
+  <Project Path="src/DtoOrm.Core/DtoOrm.Core.csproj" />
+  <Project Path="src/DtoOrm.Generator/DtoOrm.Generator.csproj" />
+  <Project Path="src/DtoOrm.MariaDb/DtoOrm.MariaDb.csproj" />
+  <Project Path="tests/DtoOrm.Core.Tests/DtoOrm.Core.Tests.csproj" />
+</Solution>

@@ -1,0 +1,23 @@
+services:
+  mariadb:
+    image: mariadb:11
+    container_name: dtoorm-mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: dtoorm_demo
+      MARIADB_USER: dtoorm
+      MARIADB_PASSWORD: dtoorm
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./samples/sql:/docker-entrypoint-initdb.d:ro
+      - mariadb-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mariadb-data:
