@@ -1,10 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <PackageId>DtoOrm.MariaDb</PackageId>
-    <Description>MariaDB/MySQL provider for DtoOrm using MySqlConnector.</Description>
+    <PackageId>DtoOrm</PackageId>
+    <Description>DTO-first ORM for MariaDB/MySQL: query DSL, SQL builder, DTO mapper, and schema source generator — all in one package.</Description>
+    <PackageTags>orm;dto;mariadb;mysql;mysqlconnector;source-generator;query-builder</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../DtoOrm.Core/DtoOrm.Core.csproj" />
+    <!-- PrivateAssets=all: Core is bundled directly into this package, not listed as a NuGet dependency. -->
+    <ProjectReference Include="../DtoOrm.Core/DtoOrm.Core.csproj" PrivateAssets="all" />
     <PackageReference Include="MySqlConnector" Version="2.5.0" />
+    <!-- Build-order dependency only: ensures Generator.dll exists before we pack. -->
+    <ProjectReference Include="../DtoOrm.Generator/DtoOrm.Generator.csproj"
+                      ReferenceOutputAssembly="false" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Bundle Core's DLL + XML docs into lib/ so consumers get the full API surface. -->
+    <None Include="$(OutputPath)DtoOrm.Core.dll"
+          Pack="true" PackagePath="lib/$(TargetFramework)/" Visible="false" />
+    <None Include="$(OutputPath)DtoOrm.Core.xml"
+          Pack="true" PackagePath="lib/$(TargetFramework)/" Visible="false"
+          Condition="Exists('$(OutputPath)DtoOrm.Core.xml')" />
+    <!-- Bundle Generator as an in-package Roslyn analyzer. -->
+    <None Include="$(MSBuildThisFileDirectory)../DtoOrm.Generator/bin/$(Configuration)/netstandard2.0/DtoOrm.Generator.dll"
+          Pack="true" PackagePath="analyzers/dotnet/cs/" Visible="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

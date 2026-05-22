@@ -5,8 +5,12 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>dtoorm</ToolCommandName>
     <Description>CLI for generating DtoOrm schema snapshots from MariaDB information_schema.</Description>
+    <PackageTags>orm;dto;cli;tool;code-generation;mariadb;mysql</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../DtoOrm.MariaDb/DtoOrm.MariaDb.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
