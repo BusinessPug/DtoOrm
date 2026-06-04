@@ -1,6 +1,17 @@
 # DtoOrm.Cli
 
-A `dotnet` global tool that connects to a MariaDB or MySQL database, reads `information_schema`, and writes a `dtoorm.schema.json` snapshot. That snapshot is consumed at build time by `DtoOrm.Generator` to produce typed table and column constants.
+A `dotnet` global tool that connects to a MariaDB or MySQL database, reads `information_schema`, and writes a `dtoorm.schema.json` snapshot. That snapshot is consumed at build time by the source generator bundled in the [`DtoOrm`](https://www.nuget.org/packages/DtoOrm) package to produce typed table and column constants.
+
+## Where this fits
+
+This CLI is step 1 of the DtoOrm workflow. It is the **only** part that needs a live database connection:
+
+```
+dtoorm schema   ──▶   dtoorm.schema.json   ──▶   source generator   ──▶   Db.Tables.* (typed)   ──▶   your queries
+(this tool)           (commit to repo)          (in the DtoOrm pkg)       (generated at build)        (full IntelliSense)
+```
+
+You run the CLI once (and again after each migration); everything downstream is offline and deterministic from the committed JSON file. The generator ships **inside the `DtoOrm` NuGet package** as a Roslyn analyzer — there is no separate generator package to install. See the [root README](../../README.md) for the full picture.
 
 ## Contents
 
@@ -17,6 +28,8 @@ A `dotnet` global tool that connects to a MariaDB or MySQL database, reads `info
 ```bash
 dotnet tool install -g DtoOrm.Cli
 ```
+
+Requires the .NET 10 SDK.
 
 To update an existing installation:
 
@@ -128,3 +141,23 @@ The alias is derived automatically from the first three alphanumeric characters 
 4. In CI, run the CLI before building if you want to assert that the committed schema file matches the current database state.
 
 The generator runs entirely at build time from the committed file, so developers who do not have a local database can still build and compile without running the CLI.
+
+### From snapshot to typed query
+
+Once the snapshot is committed and the `DtoOrm` package is referenced (with the schema added as an `AdditionalFiles` item), the generated `Db.Tables.*` objects are immediately available with full autocomplete:
+
+```csharp
+using MyApp.Data; // the --namespace you passed to the CLI
+
+await using var session = MariaDbOrm.Create(connectionString);
+
+var users = Db.Tables.Users; // generated from dtoorm.schema.json
+
+var emails = await session
+    .From(users)
+    .Select(users.Email)
+    .Where(users.IsActive.Eq(true))
+    .ToListAsync<string>();
+```
+
+See the [root README](../../README.md#the-query-dsl) for the full query DSL, including joins, grouping, and aggregates.

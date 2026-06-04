@@ -2,6 +2,8 @@
 
 A Roslyn incremental source generator that reads a `dtoorm.schema.json` file at build time and emits a `DtoOrm.Db.g.cs` file containing strongly-typed `Table` subclasses and `Column<T>` properties for every table and column in your schema.
 
+> The generator is **shipped inside the [`DtoOrm`](https://www.nuget.org/packages/DtoOrm) NuGet package** as a bundled Roslyn analyzer. There is no separate `DtoOrm.Generator` package to install — adding `DtoOrm` enables generation automatically.
+
 ## Contents
 
 - [Installation](#installation)
@@ -16,8 +18,10 @@ A Roslyn incremental source generator that reads a `dtoorm.schema.json` file at 
 
 ## Installation
 
+The generator comes with the `DtoOrm` package, so a single reference enables it:
+
 ```bash
-dotnet add package DtoOrm.Generator
+dotnet add package DtoOrm
 ```
 
 Then declare the schema file as an `AdditionalFiles` item in your `.csproj`:

@@ -2,6 +2,8 @@
 
 MariaDB and MySQL provider for DtoOrm. Implements the Core provider contracts using [MySqlConnector](https://mysqlconnector.net/) and provides a schema reader that introspects `information_schema` to produce the JSON snapshot consumed by the source generator.
 
+> This project is **packed and published as the [`DtoOrm`](https://www.nuget.org/packages/DtoOrm) NuGet package**. It bundles `DtoOrm.Core` and the source generator, so adding `DtoOrm` is all an application needs — you do not install `DtoOrm.Core` or `DtoOrm.Generator` separately.
+
 ## Contents
 
 - [Installation](#installation)
@@ -17,10 +19,10 @@ MariaDB and MySQL provider for DtoOrm. Implements the Core provider contracts us
 ## Installation
 
 ```bash
-dotnet add package DtoOrm.MariaDb
+dotnet add package DtoOrm
 ```
 
-Requires .NET 8 and MariaDB 10.5+ or MySQL 8+.
+Requires .NET 10 and MariaDB 10.5+ or MySQL 8+.
 
 ---
 

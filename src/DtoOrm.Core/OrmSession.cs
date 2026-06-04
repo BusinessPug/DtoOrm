@@ -42,16 +42,25 @@ public sealed class OrmSession : IAsyncDisposable
         SqlCondition? where,
         int? take,
         int? skip,
-        IReadOnlyList<OrderByClause>? orderBy = null)
+        IReadOnlyList<OrderByClause>? orderBy = null,
+        IReadOnlyList<IColumn>? groupBy = null,
+        SqlCondition? having = null,
+        bool distinct = false)
     {
         if (columns.Count == 0)
         {
             throw new InvalidOperationException("At least one selected column is required.");
         }
 
+        if (having is not null && (groupBy is null || groupBy.Count == 0))
+        {
+            throw new InvalidOperationException("HAVING requires a GROUP BY clause. Call GroupBy(...) before Having(...).");
+        }
+
         var ctx = new SqlRenderContext(_dialect, qualifyColumns: true);
 
-        var sql = "SELECT " + string.Join(", ", columns.Select(c => c.RenderSelect(_dialect))) +
+        var sql = "SELECT " + (distinct ? "DISTINCT " : string.Empty) +
+                  string.Join(", ", columns.Select(c => c.RenderSelect(_dialect))) +
                   Environment.NewLine +
                   "FROM " + table.Render(_dialect);
 
@@ -63,6 +72,17 @@ public sealed class OrmSession : IAsyncDisposable
         if (where is not null)
         {
             sql += Environment.NewLine + "WHERE " + where.Render(ctx);
+        }
+
+        if (groupBy is { Count: > 0 })
+        {
+            var keys = groupBy.Select(c => c.Render(_dialect));
+            sql += Environment.NewLine + "GROUP BY " + string.Join(", ", keys);
+        }
+
+        if (having is not null)
+        {
+            sql += Environment.NewLine + "HAVING " + having.Render(ctx);
         }
 
         if (orderBy is { Count: > 0 })

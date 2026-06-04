@@ -9,6 +9,7 @@ The database-agnostic foundation of DtoOrm. It provides the query DSL, the param
 - [Querying](#querying)
 - [Conditions](#conditions)
 - [Joins](#joins)
+- [Grouping and aggregates](#grouping-and-aggregates)
 - [Insert, Update, Delete](#insert-update-delete)
 - [Row mapping](#row-mapping)
 - [Provider contracts](#provider-contracts)
@@ -152,6 +153,49 @@ session
 | `CrossJoin(table)` | `CROSS JOIN` (no ON clause) |
 
 `Select` validates that every column you pass belongs to a table that is part of the query. Selecting a column from a table that has not been joined throws `InvalidOperationException` at query-build time, not at runtime.
+
+---
+
+## Grouping and aggregates
+
+Project aggregate expressions with the `Aggregates` factory, group rows with `GroupBy`, and filter grouped rows with `Having`. Aggregates are `IColumn` values, so they can be selected, ordered by, and compared.
+
+```csharp
+var revenue = Aggregates.Sum(orders.Total, "Revenue");
+
+var report = session
+	.From(orders)
+	.Select(orders.CustomerId, Aggregates.Count(orders, "OrderCount"), revenue)
+	.Where(orders.IsPaid.Eq(true))
+	.GroupBy(orders.CustomerId)
+	.Having(revenue.Gt(1000m))
+	.OrderByDescending(orders.CustomerId)
+	.ToCommand();
+```
+
+### Aggregate factory methods
+
+| Method | SQL equivalent | Result type |
+|---|---|---|
+| `Aggregates.Count(table)` | `COUNT(*)` | `long` |
+| `Aggregates.Count(column)` | `COUNT(column)` | `long` |
+| `Aggregates.CountDistinct(column)` | `COUNT(DISTINCT column)` | `long` |
+| `Aggregates.Sum(column)` | `SUM(column)` | `decimal` |
+| `Aggregates.Avg(column)` | `AVG(column)` | `double` |
+| `Aggregates.Min(column)` | `MIN(column)` | same as column |
+| `Aggregates.Max(column)` | `MAX(column)` | same as column |
+
+Each method takes an optional `alias` argument used for the `AS` projection (and the DTO property name).
+
+### Builder methods
+
+| Method | SQL |
+|---|---|
+| `GroupBy(params IColumn[] columns)` | `GROUP BY ...` (call repeatedly to append keys) |
+| `Having(SqlCondition condition)` | `HAVING ...` (requires a preceding `GroupBy`) |
+| `Distinct()` | `SELECT DISTINCT ...` |
+
+Aggregate values expose comparison helpers (`Eq`, `NotEq`, `Gt`, `Gte`, `Lt`, `Lte`) for use in `Having`, for example `Aggregates.Sum(orders.Total).Gt(1000m)`. Calling `Having` without a `GroupBy` throws `InvalidOperationException` at build time. Clauses are always emitted in valid SQL order: `WHERE` → `GROUP BY` → `HAVING` → `ORDER BY` → `LIMIT` → `OFFSET`.
 
 ---
 
