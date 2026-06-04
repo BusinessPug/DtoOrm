@@ -26,22 +26,24 @@ You run the CLI once (and again after each migration); everything downstream is 
 ## Installation
 
 ```bash
-dotnet tool install -g DtoOrm.Cli
+dotnet tool install -g DtoOrm.Cli --prerelease
 ```
 
 Requires the .NET 10 SDK.
 
+> The package is currently published as a prerelease (for example `0.3.0-beta`). `dotnet tool install` skips prerelease versions by default, so you must pass `--prerelease` (or an explicit `--version 0.3.0-beta`); otherwise the install fails because no matching stable version is found.
+
 To update an existing installation:
 
 ```bash
-dotnet tool update -g DtoOrm.Cli
+dotnet tool update -g DtoOrm.Cli --prerelease
 ```
 
 To install locally within a repository (using a tool manifest):
 
 ```bash
 dotnet new tool-manifest   # only needed once per repo
-dotnet tool install DtoOrm.Cli
+dotnet tool install DtoOrm.Cli --prerelease
 ```
 
 When installed locally, run the tool with `dotnet dtoorm` instead of `dtoorm`.

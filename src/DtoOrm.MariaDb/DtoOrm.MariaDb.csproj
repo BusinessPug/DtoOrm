@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>DtoOrm</PackageId>
-    <Description>DTO-first ORM for MariaDB/MySQL: query DSL, SQL builder, DTO mapper, and schema source generator — all in one package.</Description>
+    <Description>DTO-first ORM for MariaDB/MySQL: query DSL, SQL builder, DTO mapper, and schema source generator - all in one package.</Description>
     <PackageTags>orm;dto;mariadb;mysql;mysqlconnector;source-generator;query-builder</PackageTags>
   </PropertyGroup>
   <ItemGroup>

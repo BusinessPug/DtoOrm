@@ -55,9 +55,11 @@ Because the schema snapshot is a checked-in file, builds are deterministic and o
 | Package | Install | What it gives you |
 |---|---|---|
 | **DtoOrm** | `dotnet add package DtoOrm` | The everything-you-need runtime: query DSL, SQL builder, DTO mapper, the MariaDB/MySQL provider, **and** the source generator (bundled as an analyzer). |
-| **DtoOrm.Cli** | `dotnet tool install -g DtoOrm.Cli` | The `dtoorm` global tool that snapshots your database schema to `dtoorm.schema.json`. |
+| **DtoOrm.Cli** | `dotnet tool install -g DtoOrm.Cli --prerelease` | The `dtoorm` global tool that snapshots your database schema to `dtoorm.schema.json`. |
 
-> The `DtoOrm` package bundles `DtoOrm.Core` and the generator, so a single `dotnet add package DtoOrm` is all an application project needs. You do **not** add the Core or Generator packages separately.
+> While DtoOrm is in beta, the packages are published as prerelease. Add the `--prerelease` flag (for `dotnet tool` commands) or `--prerelease`/an explicit `--version` (for `dotnet add package`) when installing, otherwise the prerelease versions are skipped and the install fails with a "not found" error.
+
+> The `DtoOrm` package bundles
 
 ---
 
@@ -66,7 +68,7 @@ Because the schema snapshot is a checked-in file, builds are deterministic and o
 ### 1. Snapshot your schema with the CLI
 
 ```bash
-dotnet tool install -g DtoOrm.Cli
+dotnet tool install -g DtoOrm.Cli --prerelease
 
 dtoorm schema \
   --connection "Server=localhost;Port=3306;Database=mydb;User ID=root;Password=secret;" \

@@ -13,6 +13,6 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>Nikolaj Hansen</Authors>
     <Company>Nikolaj Hansen</Company>
-    <Version>0.3.0-beta</Version>
+    <Version>0.3.1-beta</Version>
   </PropertyGroup>
 </Project>
