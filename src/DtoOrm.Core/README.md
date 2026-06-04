@@ -11,6 +11,7 @@ The database-agnostic foundation of DtoOrm. It provides the query DSL, the param
 - [Joins](#joins)
 - [Grouping and aggregates](#grouping-and-aggregates)
 - [Insert, Update, Delete](#insert-update-delete)
+- [Transactions](#transactions)
 - [Row mapping](#row-mapping)
 - [Provider contracts](#provider-contracts)
 - [Extending the library](#extending-the-library)
@@ -247,6 +248,64 @@ await session
 ```
 
 The same unfiltered guard applies. Call `.Unfiltered()` to allow a delete without a WHERE clause.
+
+---
+
+## Transactions
+
+Without a transaction, every operation opens its own connection, runs, and closes it. To run several
+statements atomically on a single connection, start a transaction from the session. Operations issued
+through the returned `OrmTransaction` participate in it automatically.
+
+```csharp
+await using var tx = await session.BeginTransactionAsync();
+
+var customerId = await tx
+	.InsertInto(Db.Tables.Customers)
+	.Value(Db.Tables.Customers.Name, "Ada")
+	.ExecuteAndReturnIdAsync();
+
+await tx
+	.InsertInto(Db.Tables.Orders)
+	.Value(Db.Tables.Orders.CustomerId, (int)customerId)
+	.Value(Db.Tables.Orders.Total, 49.95m)
+	.ExecuteAsync();
+
+await tx.CommitAsync();
+```
+
+If the transaction is disposed without calling `CommitAsync`, it is rolled back, so partial work is
+never silently persisted. Pass an `IsolationLevel` to `BeginTransactionAsync` to override the default.
+
+For the common commit-on-success / rollback-on-exception pattern, use `WithTransactionAsync`, which
+commits when the delegate completes and rolls back if it throws:
+
+```csharp
+await session.WithTransactionAsync(async tx =>
+{
+	await tx.Update(Db.Tables.Accounts)
+		.Set(Db.Tables.Accounts.Balance, fromBalance - amount)
+		.Where(Db.Tables.Accounts.Id.Eq(fromId))
+		.ExecuteAsync();
+
+	await tx.Update(Db.Tables.Accounts)
+		.Set(Db.Tables.Accounts.Balance, toBalance + amount)
+		.Where(Db.Tables.Accounts.Id.Eq(toId))
+		.ExecuteAsync();
+});
+```
+
+| Member | Returns | Description |
+| --- | --- | --- |
+| `BeginTransactionAsync()` | `Task<OrmTransaction>` | Opens a connection and begins a transaction |
+| `BeginTransactionAsync(IsolationLevel)` | `Task<OrmTransaction>` | Begins a transaction with an explicit isolation level |
+| `WithTransactionAsync(work)` | `Task` | Runs `work`, committing on success and rolling back on exception |
+| `WithTransactionAsync<TResult>(work)` | `Task<TResult>` | Same, returning the delegate's result |
+| `OrmTransaction.CommitAsync()` | `Task` | Commits the transaction |
+| `OrmTransaction.RollbackAsync()` | `Task` | Rolls the transaction back |
+
+Only one transaction can be active on a session at a time; calling `BeginTransactionAsync` while one
+is already active throws `InvalidOperationException`.
 
 ---
 
