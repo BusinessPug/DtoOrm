@@ -1,0 +1,13 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="page-head">
+    <div class="eyebrow">Something went wrong</div>
+    <h1>Unexpected error@(Model.StatusCode is int c ? $" ({c})" : null)</h1>
+    <p>An error occurred while processing your request. Please return to the dashboard and try again.</p>
+</div>
+
+<a class="btn" asp-page="/Index">Back to dashboard</a>

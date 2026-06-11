@@ -1,0 +1,74 @@
+@page
+@model DtoOrm.Portal.Pages.Offerings.IndexModel
+@{
+    ViewData["Title"] = "Offerings";
+}
+
+<div class="page-head">
+    <div class="eyebrow">Schedule</div>
+    <h1>Course offerings</h1>
+    <p>Every scheduled offering with its live seat count, grouped by term.</p>
+</div>
+
+<partial name="_ApiError" model="Model.ApiError" />
+
+@if (Model.Offerings.Count == 0)
+{
+    <div class="card"><div class="empty">No offerings to show.</div></div>
+}
+else
+{
+    @foreach (var term in Model.ByTerm)
+    {
+        <div class="card section-gap">
+            <div class="card-title">
+                <h2>@term.Key</h2>
+                <span class="badge muted">@term.Count() offerings</span>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Teacher</th>
+                            <th>Room</th>
+                            <th class="num">Seats</th>
+                            <th>Fill</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var o in term)
+                        {
+                            <tr>
+                                <td><span class="badge muted">@o.CourseCode</span> @o.CourseTitle</td>
+                                <td>@o.TeacherName</td>
+                                <td>@o.Room</td>
+                                <td class="num">@o.Enrolled / @o.Capacity</td>
+                                <td>
+                                    <div class="meter @(o.IsFull ? "full" : null)" style="--pct:@(o.FillPercent)%">
+                                        <span></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (o.IsFull)
+                                    {
+                                        <span class="badge danger">Full</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge ok">@o.SeatsAvailable open</span>
+                                    }
+                                </td>
+                                <td class="row-actions">
+                                    <a asp-page="/Offerings/Details" asp-route-id="@o.OfferingId">Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}

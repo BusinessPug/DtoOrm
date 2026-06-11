@@ -17,6 +17,15 @@ public static class OfferingsEndpoints
             return result is null ? Results.NotFound() : Results.Ok(result);
         });
 
+        group.MapGet("/{id:int}/details", async (int id, Dispatcher d, CancellationToken ct) =>
+        {
+            var result = await d.QueryAsync(new GetOfferingDetailsQuery(id), ct);
+            return result is null ? Results.NotFound() : Results.Ok(result);
+        });
+
+        group.MapGet("/{id:int}/roster", async (int id, Dispatcher d, CancellationToken ct) =>
+            Results.Ok(await d.QueryAsync(new GetOfferingRosterQuery(id), ct)));
+
         group.MapPost("/", async (CreateOfferingCommand body, Dispatcher d, CancellationToken ct) =>
         {
             var id = await d.SendAsync(body, ct);

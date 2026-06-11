@@ -76,21 +76,64 @@ public sealed class GetStudentTranscriptHandler : IQueryHandler<GetStudentTransc
     }
 }
 
-public sealed class EnrollStudentHandler : ICommandHandler<EnrollStudentCommand, int>
+public sealed class EnrollStudentHandler : ICommandHandler<EnrollStudentCommand, EnrollmentOutcome>
 {
     private readonly OrmSession _session;
     public EnrollStudentHandler(OrmSession session) => _session = session;
 
-    public async Task<int> HandleAsync(EnrollStudentCommand command, CancellationToken cancellationToken)
+    public Task<EnrollmentOutcome> HandleAsync(EnrollStudentCommand command, CancellationToken cancellationToken)
     {
         var e = Db.Tables.Enrollments;
-        var id = await _session.InsertInto(e)
-            .Value(e.StudentId, command.StudentId)
-            .Value(e.OfferingId, command.OfferingId)
-            .Value(e.EnrolledAt, command.EnrolledAt)
-            .ExecuteAndReturnIdAsync(cancellationToken).ConfigureAwait(false);
-        return (int)id;
+        var o = Db.Tables.Offerings;
+
+        // Run the read-checks and the insert on one connection inside a transaction so the seat
+        // count cannot change between the capacity check and the insert.
+        return _session.WithTransactionAsync(async tx =>
+        {
+            var existing = await tx
+                .From(e)
+                .Select(e.Id.As("Id"))
+                .Where(e.StudentId.Eq(command.StudentId) & e.OfferingId.Eq(command.OfferingId))
+                .FirstOrDefaultAsync<IdRow>(cancellationToken).ConfigureAwait(false);
+            if (existing is not null)
+            {
+                return EnrollmentOutcome.AlreadyEnrolled(existing.Id);
+            }
+
+            var offering = await tx
+                .From(o)
+                .Select(o.Capacity.As("Capacity"))
+                .Where(o.Id.Eq(command.OfferingId))
+                .FirstOrDefaultAsync<CapacityRow>(cancellationToken).ConfigureAwait(false);
+            if (offering is null)
+            {
+                return EnrollmentOutcome.NotFound();
+            }
+
+            var taken = await tx
+                .From(e)
+                .Select(Aggregates.Count(e, "Count"))
+                .Where(e.OfferingId.Eq(command.OfferingId))
+                .FirstOrDefaultAsync<CountRow>(cancellationToken).ConfigureAwait(false);
+            var enrolled = taken?.Count ?? 0;
+            if (enrolled >= offering.Capacity)
+            {
+                return EnrollmentOutcome.Full(offering.Capacity, enrolled);
+            }
+
+            var id = await tx.InsertInto(e)
+                .Value(e.StudentId, command.StudentId)
+                .Value(e.OfferingId, command.OfferingId)
+                .Value(e.EnrolledAt, command.EnrolledAt)
+                .ExecuteAndReturnIdAsync(cancellationToken).ConfigureAwait(false);
+
+            return EnrollmentOutcome.Success((int)id);
+        }, cancellationToken);
     }
+
+    private sealed record IdRow(int Id);
+    private sealed record CapacityRow(int Capacity);
+    private sealed record CountRow(long Count);
 }
 
 public sealed class AssignGradeHandler : ICommandHandler<AssignGradeCommand, bool>

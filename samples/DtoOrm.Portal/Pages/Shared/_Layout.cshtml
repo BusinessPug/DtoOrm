@@ -1,0 +1,51 @@
+@{
+    var nav = new (string Page, string Label)[]
+    {
+        ("/Index", "Dashboard"),
+        ("/Students/Index", "Students"),
+        ("/Offerings/Index", "Offerings"),
+    };
+    string? current = ViewContext.RouteData.Values["page"] as string;
+    bool IsActive(string page) =>
+        current is not null &&
+        (current.Equals(page, StringComparison.OrdinalIgnoreCase) ||
+         (page.EndsWith("/Index", StringComparison.OrdinalIgnoreCase) &&
+          current.StartsWith(page[..^"/Index".Length] + "/", StringComparison.OrdinalIgnoreCase)));
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] · DtoOrm School Portal</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" asp-page="/Index">
+                <span class="brand-mark">◆</span>
+                <span>DtoOrm School</span>
+            </a>
+            <nav class="nav">
+                @foreach (var item in nav)
+                {
+                    <a asp-page="@item.Page" class="nav-link @(IsActive(item.Page) ? "active" : null)">@item.Label</a>
+                }
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <span>DtoOrm School Portal — a sample front end for the DtoOrm School API.</span>
+        </div>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

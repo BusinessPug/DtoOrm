@@ -13,8 +13,15 @@ public static class EnrollmentsEndpoints
 
         group.MapPost("/", async (EnrollStudentCommand body, Dispatcher d, CancellationToken ct) =>
         {
-            var id = await d.SendAsync(body, ct);
-            return Results.Created($"/api/enrollments/{id}", new { id });
+            var outcome = await d.SendAsync(body, ct);
+            return outcome.Status switch
+            {
+                EnrollmentStatus.Enrolled => Results.Created($"/api/enrollments/{outcome.EnrollmentId}", new { id = outcome.EnrollmentId }),
+                EnrollmentStatus.AlreadyEnrolled => Results.Conflict(new { message = "Student is already enrolled in this offering.", enrollmentId = outcome.EnrollmentId }),
+                EnrollmentStatus.OfferingFull => Results.Conflict(new { message = "This offering is full.", capacity = outcome.Capacity, enrolled = outcome.Enrolled }),
+                EnrollmentStatus.OfferingNotFound => Results.NotFound(new { message = "Offering not found." }),
+                _ => Results.Problem("Unknown enrollment outcome.")
+            };
         });
 
         group.MapPatch("/{id:int}/grade", async (int id, AssignGradeCommand body, Dispatcher d, CancellationToken ct) =>

@@ -56,6 +56,69 @@ public sealed class GetOfferingByIdHandler : IQueryHandler<GetOfferingByIdQuery,
     }
 }
 
+public sealed class GetOfferingDetailsHandler : IQueryHandler<GetOfferingDetailsQuery, OfferingDetailsDto?>
+{
+    private readonly OrmSession _session;
+    public GetOfferingDetailsHandler(OrmSession session) => _session = session;
+
+    public Task<OfferingDetailsDto?> HandleAsync(GetOfferingDetailsQuery query, CancellationToken cancellationToken)
+    {
+        var o = Db.Tables.Offerings;
+        var c = Db.Tables.Courses;
+        var t = Db.Tables.Teachers;
+        var tm = Db.Tables.Terms;
+
+        return _session
+            .From(o)
+            .InnerJoin(c, c.Id.EqColumn(o.CourseId))
+            .InnerJoin(t, t.Id.EqColumn(o.TeacherId))
+            .InnerJoin(tm, tm.Id.EqColumn(o.TermId))
+            .Select(
+                o.Id.As("Id"),
+                c.Id.As("CourseId"),
+                c.Code.As("CourseCode"),
+                c.Title.As("CourseTitle"),
+                c.Credits.As("Credits"),
+                t.Id.As("TeacherId"),
+                t.FirstName.As("TeacherFirstName"),
+                t.LastName.As("TeacherLastName"),
+                tm.Id.As("TermId"),
+                tm.Name.As("TermName"),
+                o.Capacity.As("Capacity"),
+                o.Room.As("Room"))
+            .Where(o.Id.Eq(query.Id))
+            .SingleOrDefaultAsync<OfferingDetailsDto>(cancellationToken);
+    }
+}
+
+public sealed class GetOfferingRosterHandler : IQueryHandler<GetOfferingRosterQuery, IReadOnlyList<RosterEntryDto>>
+{
+    private readonly OrmSession _session;
+    public GetOfferingRosterHandler(OrmSession session) => _session = session;
+
+    public Task<IReadOnlyList<RosterEntryDto>> HandleAsync(GetOfferingRosterQuery query, CancellationToken cancellationToken)
+    {
+        var e = Db.Tables.Enrollments;
+        var s = Db.Tables.Students;
+
+        return _session
+            .From(e)
+            .InnerJoin(s, s.Id.EqColumn(e.StudentId))
+            .Select(
+                e.Id.As("EnrollmentId"),
+                s.Id.As("StudentId"),
+                s.FirstName.As("FirstName"),
+                s.LastName.As("LastName"),
+                s.Email.As("Email"),
+                e.EnrolledAt.As("EnrolledAt"),
+                e.Grade.As("Grade"))
+            .Where(e.OfferingId.Eq(query.OfferingId))
+            .OrderBy(s.LastName)
+            .OrderBy(s.FirstName)
+            .ToListAsync<RosterEntryDto>(cancellationToken);
+    }
+}
+
 public sealed class CreateOfferingHandler : ICommandHandler<CreateOfferingCommand, int>
 {
     private readonly OrmSession _session;

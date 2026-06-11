@@ -2,6 +2,9 @@
   <Project Path="samples/DtoOrm.Api/DtoOrm.Api.csproj">
     <Build Solution="Debug|*" Project="false" />
   </Project>
+  <Project Path="samples/DtoOrm.Portal/DtoOrm.Portal.csproj">
+    <Build Project="false" />
+  </Project>
   <Project Path="samples/DtoOrm.Sample/DtoOrm.Sample.csproj" />
   <Project Path="src/DtoOrm.Cli/DtoOrm.Cli.csproj" />
   <Project Path="src/DtoOrm.Core/DtoOrm.Core.csproj" />

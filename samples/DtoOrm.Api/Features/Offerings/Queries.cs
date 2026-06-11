@@ -6,3 +6,7 @@ public sealed record ListOfferingsQuery(int? CourseId, int? TermId, int? Teacher
     : IQuery<IReadOnlyList<OfferingDto>>;
 
 public sealed record GetOfferingByIdQuery(int Id) : IQuery<OfferingDto?>;
+
+public sealed record GetOfferingDetailsQuery(int Id) : IQuery<OfferingDetailsDto?>;
+
+public sealed record GetOfferingRosterQuery(int OfferingId) : IQuery<IReadOnlyList<RosterEntryDto>>;

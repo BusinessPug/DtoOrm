@@ -3,6 +3,7 @@ using DtoOrm.Api.Features.Courses;
 using DtoOrm.Api.Features.Departments;
 using DtoOrm.Api.Features.Enrollments;
 using DtoOrm.Api.Features.Offerings;
+using DtoOrm.Api.Features.Reports;
 using DtoOrm.Api.Features.Students;
 using DtoOrm.Api.Features.Teachers;
 using DtoOrm.Api.Features.Terms;
@@ -46,5 +47,6 @@ app.MapCourses();
 app.MapTerms();
 app.MapOfferings();
 app.MapEnrollments();
+app.MapReports();
 
 app.Run();
