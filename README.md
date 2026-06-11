@@ -23,6 +23,7 @@ Think of it as the sweet spot between a hand-written `DbCommand` and a heavyweig
   - [DISTINCT](#distinct)
   - [Insert / Update / Delete](#insert--update--delete)
 - [Dependency injection](#dependency-injection)
+- [Run the full sample stack on Windows](#run-the-full-sample-stack-on-windows)
 - [Component documentation](#component-documentation)
 - [Requirements](#requirements)
 - [License](#license)
@@ -237,6 +238,48 @@ Inject `OrmSession` into your repositories or handlers and query as shown above.
 
 ---
 
+## Run the full sample stack on Windows
+
+The repo ships with a small three-tier sample: a **MariaDB** database, the **DtoOrm.Api** minimal API (`http://localhost:5080`), and the **DtoOrm.Portal** Razor Pages front end (`http://localhost:5090`). Two PowerShell scripts at the repo root bring the whole thing up — and back down — in the right order, so you don't have to start each piece by hand.
+
+**Prerequisites:** the .NET 10 SDK and [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for the database).
+
+```powershell
+# from the repo root
+.\start-all.ps1
+```
+
+`start-all.ps1` runs these steps in order, waiting for each tier before starting the next:
+
+1. Brings up MariaDB via `samples/docker-compose.yml` and waits for the container's health check to pass. On first run the database is seeded automatically from `samples/sql`.
+2. Builds the API and Portal up front so any compile error surfaces immediately.
+3. Launches the API in its own window and waits until it answers.
+4. Launches the Portal in its own window and waits until it answers.
+5. Opens the Portal in your default browser.
+
+The API and Portal each run in their own PowerShell window, so you can watch their logs and stop them with `Ctrl+C`.
+
+When you're finished, tear it all down:
+
+```powershell
+.\stop-all.ps1               # stop the apps and the database container
+.\stop-all.ps1 -RemoveData   # also drop the data volume so the DB re-seeds next time
+```
+
+Handy `start-all.ps1` switches:
+
+| Switch | Effect |
+|---|---|
+| `-SkipDatabase` | Don't touch Docker; assume MariaDB is already running on port 3306. |
+| `-SkipBuild` | Skip the upfront build (each app still builds on `dotnet run`). |
+| `-NoBrowser` | Don't open the browser at the end. |
+
+> Prefer to start things by hand? Run them in this order from the repo root:
+> `docker compose -f samples/docker-compose.yml --project-directory . up -d`, then
+> `dotnet run --project samples/DtoOrm.Api`, then `dotnet run --project samples/DtoOrm.Portal`.
+
+---
+
 ## Component documentation
 
 Each component has focused docs alongside its source:
@@ -257,6 +300,7 @@ src/
 samples/
   DtoOrm.Sample      Console project showing every query shape and the SQL it emits
   DtoOrm.Api         Minimal ASP.NET Core API showing DI registration
+  DtoOrm.Portal      Razor Pages front end for the sample API (start with start-all.ps1)
 tests/
   DtoOrm.Core.Tests  Unit tests for the SQL builder
 ```
