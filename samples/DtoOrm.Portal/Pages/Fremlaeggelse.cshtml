@@ -1,0 +1,617 @@
+@page
+@model FremlaeggelseModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Fremlæggelse";
+    var year = DateTime.Now.Year;
+}
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DtoOrm · Fremlæggelse</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="~/css/deck.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="progress"><span id="bar"></span></div>
+
+    <main class="deck">
+
+        @* 1 TITEL *@
+        <section class="slide title-slide is-active" data-title="Titel - ingen PowerPoint">
+            <div class="slide-body">
+                <div class="title-row slide-in">
+                    <span class="brand-mark">◆</span>
+                    <span>DtoOrm School</span>
+                </div>
+                <div class="kicker slide-in">WebServer Programmering · produkt, proces &amp; kode</div>
+                <h1 class="slide-in">Portalen, API'et<br />og min egen ORM</h1>
+                <p class="lead slide-in">En lille skoleportal, et minimalt API ovenpå - og en håndbygget, typesikker ORM helt i bunden.</p>
+                <div class="reveal slide-in">
+                    “Jeg har ikke nogen PowerPoint til jer …<br /><b>til gengæld har jeg dét her.</b>”
+                </div>
+            </div>
+            <div class="talk">
+                <span class="time">~0:30</span>
+                <p><strong>Åbning.</strong> Start roligt. Forklar at jeg allerede har fremlagt selve ORM'en tidligere - i dag handler det om produktet <em>ovenpå</em> den: portalen og API'et, med MariaDB i bunden.</p>
+                <p>dette <em>er</em> præsentationen - kørt live i selve produktet.</p>
+            </div>
+        </section>
+
+        @* 2 DAGSORDEN *@
+        <section class="slide" data-title="Dagsorden">
+            <div class="slide-body">
+                <div class="kicker slide-in">Dagsorden</div>
+                <h2 class="slide-in">Tre dele på ~15 minutter</h2>
+                <div class="cols c3">
+                    <div class="card accent-green slide-in">
+                        <h3>1 · Produkt</h3>
+                        <p class="muted-text">Hvad jeg er nået til, hvordan det virker, og hvad der mangler.</p>
+                    </div>
+                    <div class="card accent-honey slide-in">
+                        <h3>2 · Proces</h3>
+                        <p class="muted-text">Hvordan jeg strukturerede arbejdet - og hvad der gik godt og skidt.</p>
+                    </div>
+                    <div class="card accent-plum slide-in">
+                        <h3>3 · Kode</h3>
+                        <p class="muted-text">En tur gennem kodebasen: arkitektur, ORM, API og portal.</p>
+                    </div>
+                </div>
+                <div class="chips slide-in">
+                    <span class="chip">Razor Pages</span>
+                    <span class="chip">Minimal API</span>
+                    <span class="chip">CQRS</span>
+                    <span class="chip">Egen ORM</span>
+                    <span class="chip">MariaDB</span>
+                    <span class="chip">Docker</span>
+                </div>
+            </div>
+            <div class="talk">
+                <span class="time">~0:30</span>
+                <p>tre dele. Hold tempoet - produkt og proces er det halve, kodegennemgangen det andet halve.</p>
+                <p>Nævn at hele bunken kører lokalt nu, og at jeg tager spørgsmål til sidst.</p>
+            </div>
+        </section>
+
+        @* AKT 1 PRODUKT *@
+        <section class="slide divider" data-title="① Produktfremlæggelse">
+            <div class="slide-body">
+                <div class="actno slide-in">01</div>
+                <div class="kicker slide-in">Første del</div>
+                <h2 class="slide-in" style="border:0;padding:0;">Produktfremlæggelse</h2>
+            </div>
+            <div class="talk">
+                <span class="time">~0:10</span>
+                <p>Kort overgang. “Først produktet - hvad har jeg bygget, og virker det?”</p>
+            </div>
+        </section>
+
+        @* 4 STAKKEN *@
+        <section class="slide" data-title="Produktet - stakken">
+            <div class="slide-body">
+                <div class="kicker slide-in">Hvad er produktet</div>
+                <h2 class="slide-in">Tre lag - og min ORM i bunden</h2>
+                <div class="flow slide-in">
+                    <div class="node">
+                        <div class="n-title">Portal</div>
+                        <div class="n-sub">Razor Pages · UI</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="node">
+                        <div class="n-title">School API</div>
+                        <div class="n-sub">Minimal API · CQRS</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="node orm">
+                        <div class="n-title">DtoOrm</div>
+                        <div class="n-sub">typesikker SQL</div>
+                        <span class="n-badge">min egen</span>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="node db">
+                        <div class="n-title">MariaDB</div>
+                        <div class="n-sub">i Docker</div>
+                    </div>
+                </div>
+                <p class="flow-note slide-in">Portalen taler kun HTTP med API'et. API'et taler med databasen gennem DtoOrm - aldrig håndskrevne SQL-strenge.</p>
+                <ul class="ticks">
+                    <li class="slide-in">Domæne: en lille skole stjålet fra tavlen - <strong>departments, teachers, students, courses, offerings, enrollments, terms</strong>.</li>
+                    <li class="slide-in">Portalen er bevidst (for nu) <strong>read-only</strong> - den viser data; API'et ejer al skrivning.</li>
+                </ul>
+            </div>
+            <div class="talk">
+                <span class="time">~1:00</span>
+                <p>Forklar dataflowet venstre→højre. Pointér at det vigtige er den grønne kasse: API'et bruger <em>min egen</em> ORM, ikke Entity Framework eller Dapper.</p>
+                <p>Sig hvorfor lagene er adskilt: portalen kan ikke “snyde” og gå udenom API'et, fordi den kun kender en HTTP-klient.</p>
+            </div>
+        </section>
+
+        @* 5 LIVE DEMO *@
+        <section class="slide" data-title="Live demo (skift til portalen)">
+            <div class="slide-body">
+                <div class="kicker slide-in">Her er hvordan det virker</div>
+                <h2 class="slide-in">Live demo</h2>
+                <div class="cols c3">
+                    <div class="card accent-green slide-in">
+                        <h3>Dashboard</h3>
+                        <p class="muted-text">Aggregerede nøgletal: kurser pr. afdeling (LEFT JOIN + COUNT) og mest populære kurser (GROUP BY + HAVING).</p>
+                    </div>
+                    <div class="card accent-honey slide-in">
+                        <h3>Studerende</h3>
+                        <p class="muted-text">Søgning og filtrering, og en karakterudskrift pr. studerende på tværs af hold.</p>
+                    </div>
+                    <div class="card accent-plum slide-in">
+                        <h3>Hold</h3>
+                        <p class="muted-text">Detaljer med deltagerliste (JOIN students), pladsmåler og karakterstatus.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="talk">
+                <span class="time">~2:30 (live)</span>
+                <p><strong>Demoens kerne.</strong> Åbn portalen i et andet faneblad, vis de tre sider, og start på Dashboard: forklar at hvert tal kommer fra en rigtig SQL-forespørgsel bygget af ORM'en.</p>
+                <p>Gå til Studerende → søg → åbn en karakterudskrift. Gå til Hold → åbn et hold → vis deltagerliste og pladsmåleren. Bind det tilbage: “det her er JOINs og GROUP BY i praksis”.</p>
+                <p>Nok en god idé at have et fallback hvis lortet ikke vil virke når der skal præsenteres</p>
+            </div>
+        </section>
+
+        @* 6 DRIFT *@
+        <section class="slide" data-title="Sådan kører det (drift)">
+            <div class="slide-body">
+                <div class="kicker slide-in">Maskinmæssigt</div>
+                <h2 class="slide-in">Sådan kører det</h2>
+                <div class="cols wide-left">
+                    <div class="card slide-in">
+                        <h3>I dag - ét script</h3>
+                        <ul class="plain">
+                            <li><strong>MariaDB</strong> kører i Docker (compose, seedet med skema + testdata).</li>
+                            <li><strong>API + portal</strong> kører lokalt fra Visual Studio / <code>dotnet run</code>.</li>
+                            <li>Ét PowerShell-script - <code>start-all.ps1</code> - booter database, API og portal i rigtig rækkefølge og åbner browseren.</li>
+                        </ul>
+                    </div>
+                    <div class="card accent-honey slide-in">
+                        <h3>Hvad jeg ville gøre i “rigtig” drift</h3>
+                        <ul class="plain">
+                            <li>Containerisere <em>alle tre</em> og køre det hele med én compose-fil.</li>
+                            <li>Hemmeligheder i miljøvariabler frem for appsettings.</li>
+                            <li>Reverse proxy foran + health checks på hver service.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="talk">
+                <span class="time">~1:00</span>
+                <p>opsætningen: database i Docker, app-lagene lokalt. Det er nok til udvikling og demo.</p>
+                <p>Vis at jeg har tænkt et skridt videre: nævn hvad der skulle til for produktion (alt i containere, hemmeligheder ud af filer, proxy + health checks). Det er der nok lidt bonuspoint i.</p>
+            </div>
+        </section>
+
+        @* 7 STATUS *@
+        <section class="slide" data-title="Status - færdigt / mangler">
+            <div class="slide-body">
+                <div class="kicker slide-in">Her er jeg nået til</div>
+                <h2 class="slide-in">Status</h2>
+                <div class="cols">
+                    <div class="slide-in">
+                        <ul class="status">
+                            <li class="done">Typesikker ORM: select, joins, where, group by, having, aggregater <span class="tag">færdig</span></li>
+                            <li class="done">Sessions + transaktioner med auto-rollback <span class="tag">færdig</span></li>
+                            <li class="done">Source generator: skema → typede tabeller <span class="tag">færdig</span></li>
+                            <li class="done">API: alle features som CQRS-skiver + Swagger <span class="tag">færdig</span></li>
+                            <li class="done">Portal: dashboard, studerende, hold, udskrift <span class="tag">færdig</span></li>
+                        </ul>
+                    </div>
+                    <div class="slide-in">
+                        <ul class="status">
+                            <li class="partial">Skrivning fra portalen (opret/ret hold) - API'et kan det, UI mangler <span class="tag">delvist</span></li>
+                            <li class="partial">Oprydning: tomme <code>Application/</code>-mapper fra en påbegyndt refaktorering <span class="tag">delvist</span></li>
+                            <li class="todo">Login / adgangsstyring <span class="tag">mangler</span></li>
+                            <li class="todo">Automatiske tests på API- og portal-laget <span class="tag">mangler</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="talk">
+                <span class="time">~1:00</span>
+                <p>Kør listen oppefra og ned. Vær konkret: grønt = virker og er demonstreret, gult = delvist, rødt = bevidst valgt fra pga. tid. eller fordi det var indtænkt for sent</p>
+                <p>tage det røde roligt - det er prioritering, ikke uvidenhed. Det leder til næste slide.</p>
+            </div>
+        </section>
+
+        @* 8 UFÆRDIG FEATURE *@
+        <section class="slide" data-title="Ufærdig feature + plan">
+            <div class="slide-body">
+                <div class="kicker slide-in">En feature jeg ikke er færdig med</div>
+                <h2 class="slide-in">Skrivning fra portalen</h2>
+                <div class="cols wide-left">
+                    <div class="card accent-honey slide-in">
+                        <h3>Hvor langt er den?</h3>
+                        <p class="muted-text">API'et understøtter <strong>allerede</strong> oprettelse og redigering af hold (POST/PUT med command-handlers). Det er <em>kun</em> formularen i portalen, der mangler.</p>
+                    </div>
+                    <div class="card accent-green slide-in">
+                        <h3>Planen</h3>
+                        <ul class="plain">
+                            <li>Razor-side med en formular bundet til en <code>CreateOfferingCommand</code>.</li>
+                            <li>Udvid den typede klient med <code>POST</code>/<code>PUT</code>.</li>
+                            <li>Server-side validering + venlige fejl via det eksisterende alert-felt.</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="flow-note slide-in">Lavthængende frugt, fordi det tunge - ORM, command-handlers, transaktioner - allerede står klar bagved.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~0:50</span>
+                <p>en feature jeg ikke er færdig med - den er planlagt sådan og sådan</p>
+                <p>Pointen: arbejdet er ikke svært, fordi fundamentet er på plads. Jeg ved nøjagtig hvilke tre skridt der mangler.</p>
+            </div>
+        </section>
+
+        @* AKT 2 PROCES *@
+        <section class="slide divider" data-title="② Procesfremlæggelse">
+            <div class="slide-body">
+                <div class="actno slide-in">02</div>
+                <div class="kicker slide-in">Anden del</div>
+                <h2 class="slide-in" style="border:0;padding:0;">Procesfremlæggelse</h2>
+            </div>
+            <div class="talk">
+                <span class="time">~0:10</span>
+                <p>fra produkt til proces. “Hvordan kom jeg hertil - og hvad lærte jeg?”</p>
+            </div>
+        </section>
+
+        @* 10 STRUKTUR *@
+        <section class="slide" data-title="Sådan strukturerede jeg arbejdet">
+            <div class="slide-body">
+                <div class="kicker slide-in">Hvordan jeg arbejdede</div>
+                <h2 class="slide-in">Struktur i arbejdet</h2>
+                <ul class="ticks">
+                    <li class="slide-in"><strong>Nedefra og op.</strong> Først en solid ORM-kerne, så API'et ovenpå, og til sidst portalen - hvert lag stod fast før det næste.</li>
+                    <li class="slide-in"><strong>Lagdeling med klare grænser.</strong> Core (ren .NET) → MariaDb (dialekt) → API → portal. Afhængigheder peger kun én vej.</li>
+                    <li class="slide-in"><strong>Lodrette skiver i API'et.</strong> Hver feature samlet ét sted (endpoint, query, handler, dto) - nemt at finde rundt i.</li>
+                    <li class="slide-in"><strong>Små commits</strong> pr. feature, så jeg altid kunne gå tilbage til noget der virkede.</li>
+                </ul>
+            </div>
+            <div class="talk">
+                <span class="time">~1:00</span>
+                <p>historien om rækkefølgen: jeg byggede ORM først, fordi det var en del af databaseudvikling. Det betød at API-laget var hurtigt og let skrevet.</p>
+                <p>“afhængigheder peger én vej” - det er grunden til at jeg kunne teste og udskifte lag uden at rive alt ned.</p>
+            </div>
+        </section>
+
+        @* 11 GODT & SKIDT *@
+        <section class="slide" data-title="Godt og skidt">
+            <div class="slide-body">
+                <div class="kicker slide-in">Ærligt</div>
+                <h2 class="slide-in">Hvad gik godt - og skidt</h2>
+                <div class="cols">
+                    <div class="card accent-green slide-in">
+                        <h3>Godt</h3>
+                        <ul class="plain">
+                            <li>ORM-kernen blev ren og rar at bruge - den bar resten.</li>
+                            <li>Den typede tilgang fangede fejl ved compile-tid i stedet for i databasen.</li>
+                            <li>Lodrette skiver gjorde det nemt at tilføje features uden at røre alt andet.</li>
+                        </ul>
+                    </div>
+                    <div class="card accent-clay slide-in">
+                        <h3>Skidt</h3>
+                        <ul class="plain">
+                            <li>En påbegyndt refaktorering efterlod tomme mapper (rydder jeg op i).</li>
+                            <li>For lidt tid til tests og til skrive-UI'et i portalen.</li>
+                            <li>Helbredet spændte ben.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card accent-honey slide-in" style="margin-top:22px;">
+                    <p style="margin:0;"><strong>Om fokus:</strong> undervejs havde jeg nogle helbredsmæssige udfordringer, som gjorde at jeg i perioder ikke kunne lægge lige så meget fokus på produktet og skolen, som jeg ellers ville. Jeg prioriterede derfor et stærkt fundament frem for bredde - hellere få ting der virker ordentligt.</p>
+                </div>
+            </div>
+            <div class="talk">
+                <span class="time">~1:10</span>
+                <p>godt og skidt.</p>
+                <p><strong>Det personlige:</strong> nævn helbredet kort. Drej det til en bevidst prioritering: dybde frem for bredde.</p>
+            </div>
+        </section>
+
+        @* 12  LÆRING *@
+        <section class="slide" data-title="Hvad jeg ville gøre anderledes">
+            <div class="slide-body">
+                <div class="kicker slide-in">Læringer</div>
+                <h2 class="slide-in">Hvad jeg tager med</h2>
+                <ul class="ticks">
+                    <li class="slide-in"><strong>Ryd op med det samme.</strong> En halv refaktorering er dyrere end ingen - afslut den, eller lad være med at starte.</li>
+                    <li class="slide-in"><strong>Tests tidligt.</strong> Selv få tests på ORM-kernen gav stor tryghed; jeg ville udvide dem til API'et næste gang.</li>
+                    <li class="slide-in"><strong>Byg tyndt hele vejen igennem først.</strong> Én feature ende-til-ende tidligt afslører integrationsproblemer før de vokser.</li>
+                    <li class="slide-in"><strong>Planlæg for ujævn kapacitet.</strong> Mindre, afsluttede skridt er nemmere at samle op efter en pause.</li>
+                </ul>
+            </div>
+            <div class="talk">
+                <span class="time">~0:50</span>
+                <p>Konkrete,læringer. Knyt sidste punkt til forrige slide: små afsluttede skridt passer både til god praksis og til en hverdag der ikke altid er forudsigelig.</p>
+            </div>
+        </section>
+
+        @* AKT 3 KODE *@
+        <section class="slide divider" data-title="③ Kodegennemgang">
+            <div class="slide-body">
+                <div class="actno slide-in">03</div>
+                <div class="kicker slide-in">Tredje del</div>
+                <h2 class="slide-in" style="border:0;padding:0;">Kodegennemgang</h2>
+            </div>
+            <div class="talk">
+                <span class="time">~0:10</span>
+                <p>Nu det sjove: koden. Sig på forhånd at jeg viser højdepunkterne - ikke hver linje - og at jeg også peger på et sted der er grimt men virker.</p>
+            </div>
+        </section>
+
+        @* 14 KODETRÆ *@
+        <section class="slide" data-title="Kodebasens struktur">
+            <div class="slide-body">
+                <div class="kicker slide-in">Overblik</div>
+                <h2 class="slide-in">Sådan hænger koden sammen</h2>
+                <div class="tree slide-in">
+<span class="dir">src/</span>
+  <span class="proj">DtoOrm.Core</span>        <span class="desc">- ren .NET: query-byggeri, betingelser, aggregater, sessions</span>
+  <span class="proj">DtoOrm.MariaDb</span>     <span class="desc">- MariaDB-dialekt + forbindelser (backticks, @@p0, LAST_INSERT_ID)</span>
+  <span class="proj">DtoOrm.Generator</span>   <span class="desc">- source generator: skema.json → typede tabeller</span>
+  <span class="proj">DtoOrm.Cli</span>          <span class="desc">- værktøj til at læse skema fra en database</span>
+<span class="dir">samples/</span>
+  <span class="proj">DtoOrm.Api</span>         <span class="desc">- Minimal API, CQRS, lodrette feature-skiver</span>
+  <span class="proj">DtoOrm.Portal</span>      <span class="desc">- Razor Pages UI (denne side bor her)</span>
+                </div>
+                <p class="flow-note slide-in">Afhængigheder peger kun indad: Core ved intet om MariaDb, og portalen ved intet om API-projektet.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~0:50</span>
+                <p>Giv landkortet før detaljerne. Peg på de to grupper: <code>src/</code> er selve ORM-produktet, <code>samples/</code> er det der demonstrerer den.</p>
+                <p>Gentag pilereglen - den er det bærende arkitekturprincip og kommer igen i de næste slides.</p>
+            </div>
+        </section>
+
+        @* 15 ORM BUILD *@
+        <section class="slide" data-title="ORM - typet, flydende byggeri">
+            <div class="slide-body">
+                <div class="kicker slide-in">Hjertet · DtoOrm.Core</div>
+                <h2 class="slide-in">Forespørgsler man bygger som sætninger</h2>
+                <div class="code-card slide-in">
+                    <div class="code-head"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="file">Features/Reports/Handlers.cs</span></div>
+                    <pre class="code"><code>@Model.TypedBuildSnippet</code></pre>
+                </div>
+                <p class="flow-note slide-in">Flydende og uforanderligt: hvert kald returnerer en ny builder. Et aggregat (<code>Count</code>) er bare en kolonne, så det kan bruges i både <code>Select</code>, <code>Having</code> og <code>OrderBy</code>.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~1:00</span>
+                <p>Læs kæden højt som en sætning: fra enrollments, join offerings, join courses, vælg, gruppér, having, sortér. Det <em>læser</em> som SQL - det er meningen.</p>
+                <p>Fremhæv designvalget: aggregater implementerer samme interface som kolonner, så de virker overalt. Det er derfor API'et er så lille.</p>
+            </div>
+        </section>
+
+        @* 16 SQL *@
+        <section class="slide" data-title="… og den SQL det bliver til">
+            <div class="slide-body">
+                <div class="kicker slide-in">Samme forespørgsel</div>
+                <h2 class="slide-in">… bliver til præcis denne SQL</h2>
+                <div class="code-card slide-in">
+                    <div class="code-head"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="file">renderet af OrmSession.Build()</span></div>
+                    <pre class="code"><code>@Model.GeneratedSqlSnippet</code></pre>
+                </div>
+                <p class="flow-note slide-in">Bemærk: værdien i <code>HAVING</code> er <em>ikke</em> klistret ind i teksten - den er en bunden parameter. Mere om det på næste slide.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~0:40</span>
+                <p>Vis at der ikke er nogen “magi”, men nævn alligevel at det er lidt magisk - den flydende C# bliver til helt almindelig, læsbar SQL. Det gør den nem at fejlsøge.</p>
+                <p>Sæt en nål i parameteren i HAVING - den er trædesten til sikkerhedsslidet.</p>
+            </div>
+        </section>
+
+        @* 17 Column<T> *@
+        <section class="slide" data-title="Typede primitiver - Column&lt;T&gt;">
+            <div class="slide-body">
+                <div class="kicker slide-in">Hvorfor det er typesikkert</div>
+                <h2 class="slide-in">Alt bygger på Column&lt;T&gt;</h2>
+                <div class="code-card slide-in">
+                    <div class="code-head"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="file">Core/Column.cs</span></div>
+                    <pre class="code"><code>@Model.ColumnSnippet</code></pre>
+                </div>
+                <p class="flow-note slide-in">Fordi en kolonne kender sin CLR-type, kan compileren afvise <code>IsActive.Eq("ja")</code> før koden overhovedet kører.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~0:40</span>
+                <p>Det her er kerneideen bag hele “DtoOrm”-navnet: typer hele vejen igennem. En kolonne er ikke en streng - den er <code>Column&lt;T&gt;</code>.</p>
+                <p>Konsekvensen: en hel klasse af fejl forsvinder ved compile-tid i stedet for at dukke op som runtime-fejl mod databasen.</p>
+            </div>
+        </section>
+
+        @* 18 SIKKERHED *@
+        <section class="slide" data-title="Sikkerhed - parameterisering">
+            <div class="slide-body">
+                <div class="kicker slide-in">Sikkerhed by design</div>
+                <h2 class="slide-in">Brugerinput rører aldrig SQL-teksten</h2>
+                <div class="code-card slide-in">
+                    <div class="code-head"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="file">Core/SqlRenderContext.cs</span></div>
+                    <pre class="code"><code>@Model.ParamSnippet</code></pre>
+                </div>
+                <p class="flow-note slide-in">Hver værdi bliver til en nummereret parameter. SQL-injection er ikke noget man skal “huske” - det er bygget ind i hvordan forespørgsler renderes.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~0:50</span>
+                <p>Relevant for faget: dette er web-sikkerhed i praksis. Forklar at der ikke findes en vej hvor en streng fra en bruger ender direkte i SQL.</p>
+                <p>Vis de to eksempler nederst: et injection-forsøg bliver bare en harmløs bunden værdi, og <code>null</code> oversættes korrekt til <code>IS NULL</code>.</p>
+            </div>
+        </section>
+
+        @* 19 TRANSAKTIONER *@
+        <section class="slide" data-title="Sessions &amp; transaktioner">
+            <div class="slide-body">
+                <div class="kicker slide-in">Nyere tilføjelse</div>
+                <h2 class="slide-in">Sessions &amp; transaktioner</h2>
+                <div class="code-card slide-in">
+                    <div class="code-head"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="file">Core/OrmSession.cs</span></div>
+                    <pre class="code"><code>@Model.TxSnippet</code></pre>
+                </div>
+                <p class="flow-note slide-in">Flere skrivninger som én enhed. Commit ved succes; kaster blokken en undtagelse, rulles alt tilbage automatisk ved <code>Dispose</code>.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~0:40</span>
+                <p>Dette er en af de “simple ekstra ting” jeg har tilføjet siden sidst. Forklar problemet det løser: to indsættelser der skal lykkes sammen eller slet ikke.</p>
+                <p>Fremhæv sikkerhedsnettet: glemmer man at committe, ruller transaktionen tilbage af sig selv - ingen halve skrivninger.</p>
+            </div>
+        </section>
+
+        @* 20 GENERATOR *@
+        <section class="slide" data-title="Source generator">
+            <div class="slide-body">
+                <div class="kicker slide-in">Mindre kedeligt håndarbejde</div>
+                <h2 class="slide-in">Skemaet bliver til typer - automatisk</h2>
+                <div class="code-card slide-in">
+                    <div class="code-head"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="file">Generator/DtoOrmSourceGenerator.cs</span></div>
+                    <pre class="code"><code>@Model.GeneratorSnippet</code></pre>
+                </div>
+                <p class="flow-note slide-in">En incremental source generator læser <code>dtoorm.schema.json</code> ved compile-tid og udsteder de typede tabeller. Tilføj en kolonne i skemaet → den er der i koden ved næste build.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~0:50</span>
+                <p>Forklar gevinsten: jeg skriver ikke tabel-klasser i hånden, og de kan ikke komme ud af sync med skemaet, fordi de <em>genereres</em> fra det.</p>
+                <p>Nævn at det er en rigtig Roslyn source generator, koblet på som analyzer i csproj'en - det kører som en del af build, ikke som et separat værktøj.</p>
+            </div>
+        </section>
+
+        @* 21 CQRS-SKIVE *@
+        <section class="slide" data-title="API - lodret skive + CQRS">
+            <div class="slide-body">
+                <div class="kicker slide-in">API-laget</div>
+                <h2 class="slide-in">Én feature = én lodret skive</h2>
+                <div class="code-card slide-in">
+                    <div class="code-head"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="file">Features/Offerings/ (Endpoints + Handlers)</span></div>
+                    <pre class="code"><code>@Model.CqrsSnippet</code></pre>
+                </div>
+                <p class="flow-note slide-in">Endpoint → Query/Command → Handler → DTO. Handleren er stedet hvor min ORM bliver brugt - og intet andet i API'et skriver SQL.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~0:50</span>
+                <p>Forklar CQRS kort og ufarligt: forespørgsler (queries) og ændringer (commands) er adskilt og håndteres af hver sin lille handler.</p>
+                <p>Peg på at endpointet er tyndt/lille - det oversætter bare HTTP til en besked. Al logik bor i handleren, som bruger ORM'en.</p>
+            </div>
+        </section>
+
+        @* 22 FEDT & GRIMT *@
+        <section class="slide" data-title="Pisse fedt - og grimt men virker">
+            <div class="slide-body">
+                <div class="kicker slide-in">To ærlige højdepunkter</div>
+                <h2 class="slide-in">Det fede - og det grimme</h2>
+                <div class="cols">
+                    <div class="card accent-green slide-in">
+                        <h3>★ Pisse fedt</h3>
+                        <p class="muted-text">Hele rapport-laget er bygget med den <em>samme</em> lille ORM-API: COUNT, GROUP BY, HAVING, LEFT JOIN - alt typesikkert.</p>
+                    </div>
+                    <div class="card accent-clay slide-in">
+                        <h3>⚠ Grimt, men virker</h3>
+                        <div class="code-card" style="margin-top:6px;">
+                            <div class="code-head"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="file">Application/Common/Cqrs.cs</span></div>
+                            <pre class="code" style="font-size:0.8rem;"><code>@Model.DispatcherSnippet</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <p class="flow-note slide-in">Dispatcheren bruger refleksion pr. kald - fleksibelt, men ikke gratis. Og <code>Application/</code>-mapperne står tomme efter en påbegyndt refaktorering. Begge dele kender jeg til - det er bevidst gæld, ikke blinde vinkler.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~0:50</span>
+                <p>vis noten der er fed, og noten der er grim men virker.</p>
+                <p>Det fede: rapporterne. Det grimme: refleksions-dispatcheren (kunne caches eller kildegenereres) og de tomme <code>Application/</code>-mapper. At kunne udpege sin egen tekniske gæld er et styrketegn - ikke en undskyldning.</p>
+            </div>
+        </section>
+
+        @* 23 PORTAL-KLIENT *@
+        <section class="slide" data-title="Portal - typet klient">
+            <div class="slide-body">
+                <div class="kicker slide-in">UI-laget</div>
+                <h2 class="slide-in">Portalen kender kun et interface</h2>
+                <div class="code-card slide-in">
+                    <div class="code-head"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="file">Portal/Program.cs + en Razor-side</span></div>
+                    <pre class="code"><code>@Model.PortalSnippet</code></pre>
+                </div>
+                <p class="flow-note slide-in">Razor-siderne afhænger af <code>ISchoolApiClient</code> - ikke af den konkrete klient og slet ikke af API-projektet. Let at teste, let at udskifte.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~0:40</span>
+                <p>Luk cirklen tilbage til arkitekturen: portalen er bevidst “dum”. Den henter data via et interface og viser dem.</p>
+                <p>Pointér fordelen: jeg kan bytte klienten ud med en fake i en test, uden at starte hverken API eller database.</p>
+            </div>
+        </section>
+
+        @* 24 TAK *@
+        <section class="slide title-slide" data-title="Tak - spørgsmål">
+            <div class="slide-body">
+                <div class="title-row slide-in">
+                    <span class="brand-mark">◆</span>
+                    <span>DtoOrm School</span>
+                </div>
+                <div class="kicker slide-in">Tak fordi I lyttede</div>
+                <h1 class="slide-in">Spørgsmål?</h1>
+                <p class="lead slide-in">Portal, API og en egenudviklet, typesikker ORM - produkt, proces og kode på ét sted.</p>
+                <div class="chips slide-in">
+                    <span class="chip">Typesikker SQL</span>
+                    <span class="chip honey">Sikker by design</span>
+                    <span class="chip plum">CQRS</span>
+                    <span class="chip">Source generator</span>
+                </div>
+                <p class="reveal slide-in" style="margin-top:28px;">… og ja - selve fremlæggelsen var også bare produktet.</p>
+            </div>
+            <div class="talk">
+                <span class="time">~0:20</span>
+                <p>Land roligt. Gentag hovedbudskabet i én sætning: jeg byggede en typesikker ORM og et helt produkt ovenpå den.</p>
+                <p>slideshowet kørte i selve portalen. Åbn for spørgsmål.</p>
+            </div>
+        </section>
+
+    </main>
+
+    @* HUD / kontroller *@
+    <div class="hud">
+        <span class="counter"><b id="cur">1</b> / <span id="tot">24</span></span>
+        <button class="hud-btn" id="btnOverview" title="Oversigt (O)" aria-label="Oversigt">▦</button>
+        <button class="hud-btn" id="btnNotes" title="Talekort (N)" aria-label="Talekort">✎</button>
+        <button class="hud-btn" id="btnPrev" title="Forrige (←)" aria-label="Forrige">‹</button>
+        <button class="hud-btn" id="btnNext" title="Næste (→)" aria-label="Næste">›</button>
+    </div>
+
+    <div class="deck-foot">
+        <span class="fm">◆</span>
+        <span>DtoOrm · @year</span>
+    </div>
+
+    <div class="hint" id="hint">
+        <kbd>→</kbd> næste · <kbd>N</kbd> talekort · <kbd>O</kbd> oversigt · <kbd>F</kbd> fuldskærm · <kbd>?</kbd> hjælp
+    </div>
+
+    @* Oversigt-overlay *@
+    <div class="overlay" id="overview">
+        <div class="overlay-panel">
+            <h3>Oversigt - spring til</h3>
+            <ol class="jump" id="jumpList"></ol>
+        </div>
+    </div>
+
+    @* Hjælp-overlay *@
+    <div class="overlay" id="help">
+        <div class="overlay-panel">
+            <h3>Tastatur</h3>
+            <div class="shortcuts">
+                <kbd>→ / mellemrum</kbd><span>Næste slide</span>
+                <kbd>← / Backspace</kbd><span>Forrige slide</span>
+                <kbd>N</kbd><span>Vis/skjul talekort (speaker notes)</span>
+                <kbd>O</kbd><span>Oversigt - spring til en hvilken som helst slide</span>
+                <kbd>F</kbd><span>Fuldskærm til/fra</span>
+                <kbd>1-9</kbd><span>Hop til slide-nummer</span>
+                <kbd>Home / End</kbd><span>Første / sidste slide</span>
+                <kbd>Esc</kbd><span>Luk overlay</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/deck.js" asp-append-version="true"></script>
+</body>
+</html>
