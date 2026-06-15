@@ -65,7 +65,7 @@ if (Test-Path $StateFile) {
 	try { $state = Get-Content $StateFile -Raw | ConvertFrom-Json } catch { $state = $null }
 }
 
-# --- Portal + API ------------------------------------------------------------
+# Portal + API
 Write-Banner 'Portal and API'
 
 $apiUrl    = 'http://localhost:5080'
@@ -82,7 +82,7 @@ Stop-ByPort ([Uri]$portalUrl).Port
 Stop-ByPort ([Uri]$apiUrl).Port
 Write-Ok "Stopped processes on ports $(([Uri]$portalUrl).Port) and $(([Uri]$apiUrl).Port)."
 
-# --- Database ----------------------------------------------------------------
+# Database
 if ($KeepDatabase) {
 	Write-Banner 'Database (kept running)'
 } else {

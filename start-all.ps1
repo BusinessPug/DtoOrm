@@ -120,7 +120,7 @@ function Start-AppWindow($title, $projectRelPath, $launchUrl) {
 	return Start-Process -FilePath $psHost -ArgumentList $argLine -PassThru
 }
 
-# ---- main -------------------------------------------------------------------
+# main
 
 Write-Host ''
 Write-Host '  DtoOrm sample stack launcher' -ForegroundColor Green
@@ -130,7 +130,7 @@ if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
 	throw "The .NET SDK ('dotnet') was not found on PATH. Install the .NET 10 SDK."
 }
 
-# 1. Database -----------------------------------------------------------------
+# 1. Database
 if ($SkipDatabase) {
 	Write-Banner 'Database (skipped)'
 	Write-Info 'Assuming MariaDB is already listening on port 3306.'
@@ -158,7 +158,7 @@ if ($SkipDatabase) {
 	Write-Ok "MariaDB is healthy on localhost:3306 (database 'dtoorm_demo')."
 }
 
-# 2. Build --------------------------------------------------------------------
+# 2. Build
 if ($SkipBuild) {
 	Write-Banner 'Build (skipped)'
 } else {
@@ -171,7 +171,7 @@ if ($SkipBuild) {
 	Write-Ok 'Build succeeded.'
 }
 
-# 3. API ----------------------------------------------------------------------
+# 3. API
 Write-Banner 'API - DtoOrm.Api'
 $apiProc = Start-AppWindow -title 'DtoOrm API (port 5080)' -projectRelPath $ApiProject -launchUrl "$ApiUrl/swagger"
 Write-Info "Launched in a new window (PID $($apiProc.Id)). Waiting for it to answer"
@@ -181,7 +181,7 @@ if (-not (Wait-HttpReady -url "$ApiUrl/swagger/v1/swagger.json" -timeoutSeconds 
 Write-Host ''
 Write-Ok "API is ready at $ApiUrl (Swagger UI at $ApiUrl/swagger)."
 
-# 4. Portal -------------------------------------------------------------------
+# 4. Portal
 Write-Banner 'Portal - DtoOrm.Portal'
 $portalProc = Start-AppWindow -title 'DtoOrm Portal (port 5090)' -projectRelPath $PortalProject -launchUrl $PortalUrl
 Write-Info "Launched in a new window (PID $($portalProc.Id)). Waiting for it to answer"
@@ -191,7 +191,7 @@ if (-not (Wait-HttpReady -url $PortalUrl -timeoutSeconds $ServiceTimeoutSeconds)
 Write-Host ''
 Write-Ok "Portal is ready at $PortalUrl."
 
-# Save state so stop-all.ps1 can find the processes again ----------------------
+# Save state so stop-all.ps1 can find the processes again
 $containerForState = ''
 if (-not $SkipDatabase) { $containerForState = $ContainerName }
 New-Item -ItemType Directory -Force -Path $StateDir | Out-Null
@@ -204,7 +204,7 @@ New-Item -ItemType Directory -Force -Path $StateDir | Out-Null
 	startedAt = (Get-Date).ToString('o')
 } | ConvertTo-Json | Set-Content -Path $StateFile -Encoding UTF8
 
-# 5. Browser ------------------------------------------------------------------
+# 5. Browser
 if (-not $NoBrowser) {
 	Write-Banner 'Opening the Portal in your browser'
 	Start-Process $PortalUrl | Out-Null
