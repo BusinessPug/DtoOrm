@@ -11,6 +11,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
   <ItemGroup Condition="'$(RunLiveApiTests)' != 'true'">
+    <Compile Remove="DepartmentEndpointNonFunctionalTestsLive/**/*.cs" />
     <Compile Remove="DepartmentEndpointTestsLive/**/*.cs" />
     <Compile Remove="DepartmentTestsLive/**/*.cs" />
   </ItemGroup>
