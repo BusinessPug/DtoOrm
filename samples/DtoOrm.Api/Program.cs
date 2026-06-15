@@ -50,3 +50,5 @@ app.MapEnrollments();
 app.MapReports();
 
 app.Run();
+
+public partial class Program;

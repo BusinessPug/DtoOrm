@@ -1,7 +1,5 @@
 <Solution>
-  <Project Path="samples/DtoOrm.Api/DtoOrm.Api.csproj">
-    <Build Solution="Debug|*" Project="false" />
-  </Project>
+  <Project Path="samples/DtoOrm.Api/DtoOrm.Api.csproj" />
   <Project Path="samples/DtoOrm.Portal/DtoOrm.Portal.csproj">
     <Build Project="false" />
   </Project>
@@ -11,4 +9,5 @@
   <Project Path="src/DtoOrm.Generator/DtoOrm.Generator.csproj" />
   <Project Path="src/DtoOrm.MariaDb/DtoOrm.MariaDb.csproj" />
   <Project Path="tests/DtoOrm.Core.Tests/DtoOrm.Core.Tests.csproj" />
+  <Project Path="tests/DtoOrm.Api.Tests/DtoOrm.Api.Tests.csproj" />
 </Solution>
