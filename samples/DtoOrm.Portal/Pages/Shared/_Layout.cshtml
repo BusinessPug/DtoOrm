@@ -1,10 +1,19 @@
 @{
-    var nav = new (string Page, string Label)[]
+    var nav = new List<(string Page, string Label)>
     {
         ("/Index", "Dashboard"),
-        ("/Students/Index", "Students"),
-        ("/Offerings/Index", "Offerings"),
+        ("/Offerings/Index", "Schedule")
     };
+    if (User.IsInRole("Administrator") || User.IsInRole("Teacher"))
+    {
+        nav.Add(("/Offerings/Manage", "Classes"));
+        nav.Add(("/Students/Index", "Students"));
+    }
+    else if (User.IsInRole("Student"))
+    {
+        nav.Add(("/Students/Transcript", "My transcript"));
+    }
+
     string? current = ViewContext.RouteData.Values["page"] as string;
     bool IsActive(string page) =>
         current is not null &&
@@ -17,17 +26,17 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] · DtoOrm School Portal</title>
+    <title>@ViewData["Title"] - DtoOrm School Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650&family=Inter:wght@400;500;600;700&display=swap" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
     <header class="topbar">
         <div class="topbar-inner">
             <a class="brand" asp-page="/Index">
-                <span class="brand-mark">◆</span>
+                <span class="brand-mark">D</span>
                 <span>DtoOrm School</span>
             </a>
             <nav class="nav">
@@ -36,6 +45,16 @@
                     <a asp-page="@item.Page" class="nav-link @(IsActive(item.Page) ? "active" : null)">@item.Label</a>
                 }
             </nav>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <div class="user-menu">
+                    <span>@User.Identity.Name</span>
+                    <span class="role-pill">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</span>
+                    <form method="post" asp-page="/Account/Logout">
+                        <button type="submit">Sign out</button>
+                    </form>
+                </div>
+            }
         </div>
     </header>
 
@@ -47,16 +66,16 @@
         <div class="container footer-inner">
             <div>
                 <a class="brand footer-brand" asp-page="/Index">
-                    <span class="brand-mark">◆</span>
+                    <span class="brand-mark">D</span>
                     <span>DtoOrm School</span>
                 </a>
-                <p class="footer-tag">A little sample portal showing off typed SQL from the DtoOrm School API — joins, groupings and reports, served warm.</p>
+                <p class="footer-tag">A role-aware sample school portal powered by the DtoOrm School API.</p>
             </div>
             <div class="footer-meta">
                 <span class="footer-chip">Razor Pages</span>
                 <span class="footer-chip">Minimal API</span>
                 <span class="footer-chip">MariaDB</span>
-                <span class="footer-note">Made with care · @DateTime.Now.Year</span>
+                <span class="footer-note">Made with care - @DateTime.Now.Year</span>
             </div>
         </div>
     </footer>

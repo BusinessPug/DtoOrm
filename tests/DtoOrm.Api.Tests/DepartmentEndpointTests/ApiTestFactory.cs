@@ -17,7 +17,11 @@ public sealed class ApiTestFactory : WebApplicationFactory<Program>
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:MariaDb"] = "Server=localhost;Database=dtoorm_tests;Uid=test;Pwd=test;"
+                ["ConnectionStrings:MariaDb"] = "Server=localhost;Database=dtoorm_tests;Uid=test;Pwd=test;",
+                ["Jwt:Issuer"] = "DtoOrm.School.Tests",
+                ["Jwt:Audience"] = "DtoOrm.School.Tests",
+                ["Jwt:SigningKey"] = "test-only-dtoorm-school-jwt-signing-key",
+                ["Jwt:ExpirationMinutes"] = "30"
             });
         });
 

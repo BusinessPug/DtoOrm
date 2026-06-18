@@ -7,7 +7,7 @@
 <div class="page-head">
     <div class="eyebrow">Directory</div>
     <h1>Students</h1>
-    <p>Search by last name and filter by status. Backed by a parameterised <code>WHERE … LIKE</code> query.</p>
+    <p>Search by last name and filter by status. Backed by a parameterized <code>WHERE LIKE</code> query.</p>
 </div>
 
 <partial name="_ApiError" model="Model.ApiError" />
@@ -64,6 +64,7 @@ else
                             }
                         </td>
                         <td class="row-actions">
+                            <a asp-page="/Students/Schedule" asp-route-id="@s.Id">Schedule</a>
                             <a asp-page="/Students/Transcript" asp-route-id="@s.Id">Transcript</a>
                         </td>
                     </tr>

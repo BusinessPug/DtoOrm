@@ -1,10 +1,13 @@
-@page "{id:int}"
+@page "{id:int?}"
 @model DtoOrm.Portal.Pages.Students.TranscriptModel
 @{
-    ViewData["Title"] = Model.Student is null ? "Transcript" : $"{Model.Student.FullName} — Transcript";
+    ViewData["Title"] = Model.Student is null ? "Transcript" : $"{Model.Student.FullName} - Transcript";
 }
 
-<a class="back-link" asp-page="/Students/Index">← Back to students</a>
+@if (User.IsInRole("Administrator") || User.IsInRole("Teacher"))
+{
+    <a class="back-link" asp-page="/Students/Index">Back to students</a>
+}
 
 <partial name="_ApiError" model="Model.ApiError" />
 
@@ -13,7 +16,7 @@
     <div class="page-head">
         <div class="eyebrow">Transcript</div>
         <h1>@Model.Student.FullName</h1>
-        <p>@Model.Student.Email · enrolled @Model.Student.EnrolledAt.ToString("MMMM yyyy")</p>
+        <p>@Model.Student.Email - enrolled @Model.Student.EnrolledAt.ToString("MMMM yyyy")</p>
     </div>
 
     <div class="grid cols-3">
@@ -27,14 +30,14 @@
         </div>
         <div class="card">
             <div class="stat-label">GPA</div>
-            <div class="stat">@(Model.Gpa?.ToString("0.00") ?? "—")</div>
+            <div class="stat">@(Model.Gpa?.ToString("0.00") ?? "-")</div>
         </div>
     </div>
 
     <div class="card section-gap">
         <div class="card-title">
             <h2>Course history</h2>
-            <span class="badge muted">4× INNER JOIN · ORDER BY</span>
+            <span class="badge muted">Transcript</span>
         </div>
         @if (Model.Entries.Count == 0)
         {

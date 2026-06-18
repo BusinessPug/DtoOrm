@@ -13,6 +13,9 @@ public sealed class DetailsModel : ApiPageModel
     public OfferingDetailsItem? Offering { get; private set; }
     public IReadOnlyList<RosterItem> Roster { get; private set; } = Array.Empty<RosterItem>();
 
+    public bool CanViewRoster =>
+        User.IsInRole("Administrator") ||
+        (Offering is not null && User.GetTeacherId() == Offering.TeacherId);
     public int GradedCount => Roster.Count(r => r.IsGraded);
     public int SeatsRemaining => Offering is null ? 0 : Math.Max(0, Offering.Capacity - Roster.Count);
 
@@ -21,7 +24,7 @@ public sealed class DetailsModel : ApiPageModel
         var reached = await TryAsync(async () =>
         {
             Offering = await _api.GetOfferingDetailsAsync(id, cancellationToken);
-            if (Offering is not null)
+            if (Offering is not null && CanViewRoster)
             {
                 Roster = await _api.GetOfferingRosterAsync(id, cancellationToken);
             }

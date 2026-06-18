@@ -7,6 +7,7 @@ public static class CoursesEndpoints
     public static IEndpointRouteBuilder MapCourses(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/courses").WithTags("Courses");
+        group.RequireAuthorization();
 
         group.MapGet("/", async (int? departmentId, int? take, int? skip, Dispatcher d, CancellationToken ct) =>
             Results.Ok(await d.QueryAsync(new ListCoursesQuery(departmentId, take ?? 100, skip ?? 0), ct)));
@@ -21,19 +22,19 @@ public static class CoursesEndpoints
         {
             var id = await d.SendAsync(body, ct);
             return Results.Created($"/api/courses/{id}", new { id });
-        });
+        }).RequireAuthorization("AdminOnly");
 
         group.MapPut("/{id:int}", async (int id, UpdateCourseCommand body, Dispatcher d, CancellationToken ct) =>
         {
             var updated = await d.SendAsync(body with { Id = id }, ct);
             return updated ? Results.NoContent() : Results.NotFound();
-        });
+        }).RequireAuthorization("AdminOnly");
 
         group.MapDelete("/{id:int}", async (int id, Dispatcher d, CancellationToken ct) =>
         {
             var deleted = await d.SendAsync(new DeleteCourseCommand(id), ct);
             return deleted ? Results.NoContent() : Results.NotFound();
-        });
+        }).RequireAuthorization("AdminOnly");
 
         return app;
     }

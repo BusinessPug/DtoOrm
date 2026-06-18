@@ -14,7 +14,7 @@ public sealed class ListOfferingsHandler : IQueryHandler<ListOfferingsQuery, IRe
         var o = Db.Tables.Offerings;
         var builder = _session
             .From(o)
-            .Select(o.Id, o.CourseId, o.TeacherId, o.TermId, o.Capacity, o.Room);
+            .Select(o.Id, o.CourseId, o.TeacherId, o.TermId, o.Capacity, o.Room, o.Notes);
 
         SqlCondition? where = null;
         if (query.CourseId is not null)
@@ -50,7 +50,7 @@ public sealed class GetOfferingByIdHandler : IQueryHandler<GetOfferingByIdQuery,
         var o = Db.Tables.Offerings;
         return _session
             .From(o)
-            .Select(o.Id, o.CourseId, o.TeacherId, o.TermId, o.Capacity, o.Room)
+            .Select(o.Id, o.CourseId, o.TeacherId, o.TermId, o.Capacity, o.Room, o.Notes)
             .Where(o.Id.Eq(query.Id))
             .SingleOrDefaultAsync<OfferingDto>(cancellationToken);
     }
@@ -85,7 +85,8 @@ public sealed class GetOfferingDetailsHandler : IQueryHandler<GetOfferingDetails
                 tm.Id.As("TermId"),
                 tm.Name.As("TermName"),
                 o.Capacity.As("Capacity"),
-                o.Room.As("Room"))
+                o.Room.As("Room"),
+                o.Notes.As("Notes"))
             .Where(o.Id.Eq(query.Id))
             .SingleOrDefaultAsync<OfferingDetailsDto>(cancellationToken);
     }
@@ -133,6 +134,7 @@ public sealed class CreateOfferingHandler : ICommandHandler<CreateOfferingComman
             .Value(o.TermId, command.TermId)
             .Value(o.Capacity, command.Capacity)
             .Value(o.Room, command.Room)
+            .Value(o.Notes, command.Notes)
             .ExecuteAndReturnIdAsync(cancellationToken).ConfigureAwait(false);
         return (int)id;
     }
@@ -152,6 +154,7 @@ public sealed class UpdateOfferingHandler : ICommandHandler<UpdateOfferingComman
             .Set(o.TermId, command.TermId)
             .Set(o.Capacity, command.Capacity)
             .Set(o.Room, command.Room)
+            .Set(o.Notes, command.Notes)
             .Where(o.Id.Eq(command.Id))
             .ExecuteAsync(cancellationToken).ConfigureAwait(false);
         return rows > 0;

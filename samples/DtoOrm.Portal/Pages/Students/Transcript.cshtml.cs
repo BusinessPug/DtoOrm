@@ -42,14 +42,25 @@ public sealed class TranscriptModel : ApiPageModel
         }
     }
 
-    public async Task<IActionResult> OnGetAsync(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> OnGetAsync(int? id, CancellationToken cancellationToken)
     {
+        var studentId = id ?? User.GetStudentId();
+        if (studentId is null)
+        {
+            return Forbid();
+        }
+
+        if (User.IsInRole("Student") && User.GetStudentId() != studentId.Value)
+        {
+            return Forbid();
+        }
+
         var reached = await TryAsync(async () =>
         {
-            Student = await _api.GetStudentAsync(id, cancellationToken);
+            Student = await _api.GetStudentAsync(studentId.Value, cancellationToken);
             if (Student is not null)
             {
-                Entries = await _api.GetStudentTranscriptAsync(id, cancellationToken);
+                Entries = await _api.GetStudentTranscriptAsync(studentId.Value, cancellationToken);
             }
         });
 

@@ -76,6 +76,22 @@ public sealed class GetStudentTranscriptHandler : IQueryHandler<GetStudentTransc
     }
 }
 
+public sealed class GetEnrollmentByIdHandler : IQueryHandler<GetEnrollmentByIdQuery, EnrollmentDto?>
+{
+    private readonly OrmSession _session;
+    public GetEnrollmentByIdHandler(OrmSession session) => _session = session;
+
+    public Task<EnrollmentDto?> HandleAsync(GetEnrollmentByIdQuery query, CancellationToken cancellationToken)
+    {
+        var e = Db.Tables.Enrollments;
+        return _session
+            .From(e)
+            .Select(e.Id, e.StudentId, e.OfferingId, e.EnrolledAt, e.Grade)
+            .Where(e.Id.Eq(query.Id))
+            .SingleOrDefaultAsync<EnrollmentDto>(cancellationToken);
+    }
+}
+
 public sealed class EnrollStudentHandler : ICommandHandler<EnrollStudentCommand, EnrollmentOutcome>
 {
     private readonly OrmSession _session;

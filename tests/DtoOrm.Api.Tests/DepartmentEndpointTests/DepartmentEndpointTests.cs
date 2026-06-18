@@ -1,6 +1,9 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using DtoOrm.Api.Features.Departments;
+using DtoOrm.Api.Infrastructure.Auth;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace DtoOrm.Api.Tests;
@@ -15,6 +18,18 @@ public sealed class DepartmentEndpointTests : IClassFixture<ApiTestFactory>
         _factory = factory;
         _factory.Departments.Reset();
         _client = factory.CreateClient();
+        var tokens = _factory.Services.GetRequiredService<JwtTokenService>();
+        var token = tokens.CreateToken(new AuthUser(
+            1,
+            "admin",
+            "admin@school.edu",
+            "",
+            SchoolRoles.Administrator,
+            "Test Administrator",
+            null,
+            null,
+            true));
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
     [Fact]

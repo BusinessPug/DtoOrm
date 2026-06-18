@@ -41,6 +41,23 @@
       ]
     },
     {
+      "dbName": "app_users",
+      "clrName": "AppUsers",
+      "alias": "au",
+      "columns": [
+        { "dbName": "id",            "clrName": "Id",           "clrType": "int",             "ordinal": 1 },
+        { "dbName": "username",      "clrName": "Username",     "clrType": "string",          "ordinal": 2 },
+        { "dbName": "email",         "clrName": "Email",        "clrType": "string",          "ordinal": 3 },
+        { "dbName": "password_hash", "clrName": "PasswordHash", "clrType": "string",          "ordinal": 4 },
+        { "dbName": "role",          "clrName": "Role",         "clrType": "string",          "ordinal": 5 },
+        { "dbName": "display_name",  "clrName": "DisplayName",  "clrType": "string",          "ordinal": 6 },
+        { "dbName": "student_id",    "clrName": "StudentId",    "clrType": "int?",            "ordinal": 7 },
+        { "dbName": "teacher_id",    "clrName": "TeacherId",    "clrType": "int?",            "ordinal": 8 },
+        { "dbName": "is_active",     "clrName": "IsActive",     "clrType": "bool",            "ordinal": 9 },
+        { "dbName": "created_at",    "clrName": "CreatedAt",    "clrType": "System.DateTime", "ordinal": 10 }
+      ]
+    },
+    {
       "dbName": "courses",
       "clrName": "Courses",
       "alias": "c",
@@ -73,8 +90,35 @@
         { "dbName": "course_id",  "clrName": "CourseId",  "clrType": "int",    "ordinal": 2 },
         { "dbName": "teacher_id", "clrName": "TeacherId", "clrType": "int",    "ordinal": 3 },
         { "dbName": "term_id",    "clrName": "TermId",    "clrType": "int",    "ordinal": 4 },
-        { "dbName": "capacity",   "clrName": "Capacity",  "clrType": "int",    "ordinal": 5 },
-        { "dbName": "room",       "clrName": "Room",      "clrType": "string", "ordinal": 6 }
+        { "dbName": "capacity",   "clrName": "Capacity",  "clrType": "int",     "ordinal": 5 },
+        { "dbName": "room",       "clrName": "Room",      "clrType": "string",  "ordinal": 6 },
+        { "dbName": "notes",      "clrName": "Notes",     "clrType": "string?", "ordinal": 7 }
+      ]
+    },
+    {
+      "dbName": "course_meetings",
+      "clrName": "CourseMeetings",
+      "alias": "cm",
+      "columns": [
+        { "dbName": "id",          "clrName": "Id",         "clrType": "int",             "ordinal": 1 },
+        { "dbName": "offering_id", "clrName": "OfferingId", "clrType": "int",             "ordinal": 2 },
+        { "dbName": "day_of_week", "clrName": "DayOfWeek",  "clrType": "sbyte",           "ordinal": 3 },
+        { "dbName": "starts_at",   "clrName": "StartsAt",   "clrType": "System.TimeSpan", "ordinal": 4 },
+        { "dbName": "ends_at",     "clrName": "EndsAt",     "clrType": "System.TimeSpan", "ordinal": 5 },
+        { "dbName": "location",    "clrName": "Location",   "clrType": "string",          "ordinal": 6 }
+      ]
+    },
+    {
+      "dbName": "academic_breaks",
+      "clrName": "AcademicBreaks",
+      "alias": "ab",
+      "columns": [
+        { "dbName": "id",         "clrName": "Id",        "clrType": "int",             "ordinal": 1 },
+        { "dbName": "term_id",    "clrName": "TermId",    "clrType": "int",             "ordinal": 2 },
+        { "dbName": "name",       "clrName": "Name",      "clrType": "string",          "ordinal": 3 },
+        { "dbName": "start_date", "clrName": "StartDate", "clrType": "System.DateOnly", "ordinal": 4 },
+        { "dbName": "end_date",   "clrName": "EndDate",   "clrType": "System.DateOnly", "ordinal": 5 },
+        { "dbName": "notes",      "clrName": "Notes",     "clrType": "string?",         "ordinal": 6 }
       ]
     },
     {

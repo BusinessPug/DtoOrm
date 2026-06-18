@@ -1,10 +1,10 @@
 @page "{id:int}"
 @model DtoOrm.Portal.Pages.Offerings.DetailsModel
 @{
-    ViewData["Title"] = Model.Offering is null ? "Offering" : $"{Model.Offering.CourseCode} — {Model.Offering.TermName}";
+    ViewData["Title"] = Model.Offering is null ? "Offering" : $"{Model.Offering.CourseCode} - {Model.Offering.TermName}";
 }
 
-<a class="back-link" asp-page="/Offerings/Index">← Back to offerings</a>
+<a class="back-link" asp-page="/Offerings/Index">Back to offerings</a>
 
 <partial name="_ApiError" model="Model.ApiError" />
 
@@ -13,8 +13,8 @@
     var o = Model.Offering;
     <div class="page-head">
         <div class="eyebrow">@o.TermName</div>
-        <h1>@o.CourseCode — @o.CourseTitle</h1>
-        <p>Taught by @o.TeacherName · room @o.Room</p>
+        <h1>@o.CourseCode - @o.CourseTitle</h1>
+        <p>Taught by @o.TeacherName in @o.Room</p>
     </div>
 
     <div class="card">
@@ -27,68 +27,89 @@
                 <div class="k">Capacity</div>
                 <div class="v">@o.Capacity</div>
             </div>
-            <div>
-                <div class="k">Enrolled</div>
-                <div class="v">@Model.Roster.Count</div>
-            </div>
-            <div>
-                <div class="k">Seats remaining</div>
-                <div class="v">@Model.SeatsRemaining</div>
-            </div>
-            <div>
-                <div class="k">Graded</div>
-                <div class="v">@Model.GradedCount / @Model.Roster.Count</div>
-            </div>
+            @if (Model.CanViewRoster)
+            {
+                <div>
+                    <div class="k">Enrolled</div>
+                    <div class="v">@Model.Roster.Count</div>
+                </div>
+                <div>
+                    <div class="k">Seats remaining</div>
+                    <div class="v">@Model.SeatsRemaining</div>
+                </div>
+                <div>
+                    <div class="k">Graded</div>
+                    <div class="v">@Model.GradedCount / @Model.Roster.Count</div>
+                </div>
+            }
         </div>
     </div>
 
     <div class="card section-gap">
         <div class="card-title">
-            <h2>Roster</h2>
-            <span class="badge muted">INNER JOIN students · ORDER BY</span>
+            <h2>Class notes</h2>
+            <span class="badge muted">Teacher note</span>
         </div>
-        @if (Model.Roster.Count == 0)
+        @if (string.IsNullOrWhiteSpace(o.Notes))
         {
-            <div class="empty">No students are enrolled in this offering yet.</div>
+            <div class="empty">No notes have been posted for this class yet.</div>
         }
         else
         {
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Student</th>
-                            <th>Email</th>
-                            <th>Enrolled</th>
-                            <th>Grade</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var r in Model.Roster)
-                        {
-                            <tr>
-                                <td>@r.FullName</td>
-                                <td>@r.Email</td>
-                                <td>@r.EnrolledAt.ToString("yyyy-MM-dd")</td>
-                                <td>
-                                    @if (r.IsGraded)
-                                    {
-                                        <span class="badge ok">@r.Grade</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge warn">In progress</span>
-                                    }
-                                </td>
-                                <td class="row-actions">
-                                    <a asp-page="/Students/Transcript" asp-route-id="@r.StudentId">Transcript</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+            <p class="class-note">@o.Notes</p>
         }
     </div>
+
+    @if (Model.CanViewRoster)
+    {
+        <div class="card section-gap">
+            <div class="card-title">
+                <h2>Roster</h2>
+                <span class="badge muted">Students</span>
+            </div>
+            @if (Model.Roster.Count == 0)
+            {
+                <div class="empty">No students are enrolled in this offering yet.</div>
+            }
+            else
+            {
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Email</th>
+                                <th>Enrolled</th>
+                                <th>Grade</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model.Roster)
+                            {
+                                <tr>
+                                    <td>@r.FullName</td>
+                                    <td>@r.Email</td>
+                                    <td>@r.EnrolledAt.ToString("yyyy-MM-dd")</td>
+                                    <td>
+                                        @if (r.IsGraded)
+                                        {
+                                            <span class="badge ok">@r.Grade</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge warn">In progress</span>
+                                        }
+                                    </td>
+                                    <td class="row-actions">
+                                        <a asp-page="/Students/Transcript" asp-route-id="@r.StudentId">Transcript</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    }
 }

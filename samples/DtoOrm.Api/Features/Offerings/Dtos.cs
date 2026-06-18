@@ -6,7 +6,8 @@ public sealed record OfferingDto(
     int TeacherId,
     int TermId,
     int Capacity,
-    string Room);
+    string Room,
+    string? Notes);
 
 /// <summary>
 /// A fully resolved offering with related course, teacher and term names. Backed by a query that
@@ -24,7 +25,8 @@ public sealed record OfferingDetailsDto(
     int TermId,
     string TermName,
     int Capacity,
-    string Room)
+    string Room,
+    string? Notes)
 {
     public string TeacherName => $"{TeacherFirstName} {TeacherLastName}".Trim();
 }

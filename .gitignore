@@ -398,6 +398,9 @@ MSBuild_Logs/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
+# Local ASP.NET Core Data Protection keys for the sample portal
+samples/DtoOrm.Portal/App_Data/DataProtectionKeys/
+
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
 

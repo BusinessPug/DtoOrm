@@ -2,43 +2,142 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Dashboard";
+    var weekDays = new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" };
+    var today = Model.Today.ToString("MMMM d, yyyy");
 }
 
-<div class="page-head">
-    <div class="eyebrow">Overview</div>
-    <h1>School dashboard</h1>
-    <p>Live analytics served by the DtoOrm School API — aggregates, joins and grouped reports.</p>
+<div class="portal-hero">
+    <div>
+        <div class="eyebrow">@Model.Role portal</div>
+        <h1>Welcome, @User.Identity?.Name</h1>
+        <p>Live operations for @today: classes, seat counts, breaks, and authenticated role-specific school data.</p>
+    </div>
+    <div class="hero-summary">
+        <div>
+            <span>Today</span>
+            <strong>@Model.TodaySchedule.Count</strong>
+        </div>
+        <div>
+            <span>Open offerings</span>
+            <strong>@Model.Offerings.Count</strong>
+        </div>
+        <div>
+            <span>Breaks</span>
+            <strong>@Model.Breaks.Count</strong>
+        </div>
+    </div>
 </div>
 
 <partial name="_ApiError" model="Model.ApiError" />
 
-<div class="grid cols-3">
-    <div class="card">
-        <div class="stat-label">Departments</div>
-        <div class="stat">@Model.Departments.Count</div>
-    </div>
-    <div class="card">
-        <div class="stat-label">Courses in catalog</div>
-        <div class="stat">@Model.TotalCourses</div>
-    </div>
-    <div class="card">
-        <div class="stat-label">Total enrollments</div>
-        <div class="stat">@Model.TotalEnrollments</div>
-    </div>
-</div>
+@if (User.IsInRole("Administrator"))
+{
+    <section class="action-strip">
+        <a class="action-tile" asp-page="/Offerings/Manage">
+            <strong>Sitewide classes</strong>
+            <span>Create offerings, assign teachers, update rooms, capacity, and notes.</span>
+        </a>
+        <a class="action-tile" asp-page="/Students/Index">
+            <strong>Student operations</strong>
+            <span>Search students, view schedules, and inspect transcripts.</span>
+        </a>
+    </section>
+}
+else if (User.IsInRole("Teacher"))
+{
+    <section class="action-strip">
+        <a class="action-tile" asp-page="/Offerings/Manage">
+            <strong>My classes</strong>
+            <span>Create and maintain your own class sections and notes.</span>
+        </a>
+        <a class="action-tile" asp-page="/Students/Index">
+            <strong>Student schedules</strong>
+            <span>Search students and open their weekly class timetable.</span>
+        </a>
+    </section>
+}
 
-<div class="grid cols-2 section-gap">
-    <div class="card">
-        <div class="card-title">
-            <h2>Courses by department</h2>
-            <span class="badge muted">LEFT JOIN · COUNT</span>
+<section class="section-grid">
+    <div>
+        <div class="section-title">
+            <h2>My schedule</h2>
+            <span class="badge muted">@today</span>
         </div>
-        @if (Model.Departments.Count == 0)
+
+        @if (Model.WeekGrid.Blocks.Count == 0)
         {
-            <div class="empty">No departments to show.</div>
+            <div class="empty-panel">No weekday classes are scheduled for this account.</div>
         }
         else
         {
+            <div class="week-scroll">
+                <div class="week-schedule" style="--rows:@Model.WeekGrid.QuarterHourRows">
+                    <div class="week-corner">Time</div>
+                    @for (var i = 0; i < weekDays.Length; i++)
+                    {
+                        <div class="week-day" style="grid-column:@(i + 2)">@weekDays[i]</div>
+                    }
+                    @foreach (var slot in Model.WeekGrid.TimeSlots)
+                    {
+                        <div class="week-line" style="grid-row:@slot.RowStart;grid-column:1 / -1"></div>
+                        <div class="week-time" style="grid-row:@slot.RowStart / span 4">@slot.Label</div>
+                    }
+                    @foreach (var block in Model.WeekGrid.Blocks)
+                    {
+                        <a class="week-block @(block.HasConflict ? "conflict" : null)" style="@block.Style" asp-page="/Offerings/Details" asp-route-id="@block.Item.OfferingId">
+                            <time>@block.Item.TimeRange</time>
+                            <strong>@block.Item.CourseCode</strong>
+                            <span>@block.Item.CourseTitle</span>
+                            <small>@block.Item.Location</small>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="section-title">
+        <h2>Breaks</h2>
+        <span class="badge muted">Calendar</span>
+    </div>
+    <div class="break-list">
+        @foreach (var item in Model.Breaks)
+        {
+            <article class="break-item">
+                <strong>@item.Name</strong>
+                <span>@item.StartDate.ToString("MMM d") - @item.EndDate.ToString("MMM d")</span>
+                @if (!string.IsNullOrWhiteSpace(item.Notes))
+                {
+                    <p>@item.Notes</p>
+                }
+            </article>
+        }
+    </div>
+</section>
+
+@if (User.IsInRole("Administrator"))
+{
+    <div class="grid cols-3 section-gap">
+        <div class="card">
+            <div class="stat-label">Departments</div>
+            <div class="stat">@Model.Departments.Count</div>
+        </div>
+        <div class="card">
+            <div class="stat-label">Courses in catalog</div>
+            <div class="stat">@Model.TotalCourses</div>
+        </div>
+        <div class="card">
+            <div class="stat-label">Recorded enrollments</div>
+            <div class="stat">@Model.TotalEnrollments</div>
+        </div>
+    </div>
+
+    <div class="grid cols-2 section-gap">
+        <div class="card">
+            <div class="card-title">
+                <h2>Courses by department</h2>
+                <span class="badge muted">Catalog</span>
+            </div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -56,20 +155,13 @@
                     </tbody>
                 </table>
             </div>
-        }
-    </div>
-
-    <div class="card">
-        <div class="card-title">
-            <h2>Most popular courses</h2>
-            <span class="badge muted">GROUP BY · HAVING</span>
         </div>
-        @if (Model.PopularCourses.Count == 0)
-        {
-            <div class="empty">No enrollments recorded yet.</div>
-        }
-        else
-        {
+
+        <div class="card">
+            <div class="card-title">
+                <h2>Popular courses</h2>
+                <span class="badge muted">Enrollment count</span>
+            </div>
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -87,55 +179,6 @@
                     </tbody>
                 </table>
             </div>
-        }
-    </div>
-</div>
-
-<div class="card section-gap">
-    <div class="card-title">
-        <h2>Offering seat utilisation</h2>
-        <span class="badge muted">3× INNER JOIN · LEFT JOIN · COUNT</span>
-    </div>
-    @if (Model.Offerings.Count == 0)
-    {
-        <div class="empty">No offerings to show.</div>
-    }
-    else
-    {
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Course</th>
-                        <th>Term</th>
-                        <th>Teacher</th>
-                        <th>Room</th>
-                        <th class="num">Seats</th>
-                        <th>Fill</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var o in Model.Offerings)
-                    {
-                        <tr>
-                            <td><span class="badge muted">@o.CourseCode</span> @o.CourseTitle</td>
-                            <td>@o.TermName</td>
-                            <td>@o.TeacherName</td>
-                            <td>@o.Room</td>
-                            <td class="num">@o.Enrolled / @o.Capacity</td>
-                            <td>
-                                <div class="meter @(o.IsFull ? "full" : null)" style="--pct:@(o.FillPercent)%">
-                                    <span></span>
-                                </div>
-                            </td>
-                            <td class="row-actions">
-                                <a asp-page="/Offerings/Details" asp-route-id="@o.OfferingId">View</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
         </div>
-    }
-</div>
+    </div>
+}

@@ -7,6 +7,7 @@ public static class TermsEndpoints
     public static IEndpointRouteBuilder MapTerms(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/terms").WithTags("Terms");
+        group.RequireAuthorization();
 
         group.MapGet("/", async (Dispatcher d, CancellationToken ct) =>
             Results.Ok(await d.QueryAsync(new ListTermsQuery(), ct)));

@@ -1,0 +1,121 @@
+@page
+@model DtoOrm.Portal.Pages.Offerings.ManageModel
+@{
+    ViewData["Title"] = "Classes";
+}
+
+<div class="page-head compact">
+    <div class="eyebrow">Operations</div>
+    <h1>@(Model.IsAdmin ? "Manage classes" : "My classes")</h1>
+    <p>@(Model.IsAdmin ? "Create, assign, update, and close offerings across the school." : "Maintain your own class sections, rooms, capacity, and teacher notes.")</p>
+</div>
+
+<partial name="_ApiError" model="Model.ApiError" />
+
+<section class="workbench">
+    <form method="post" asp-page-handler="Save" class="card class-form">
+        <input type="hidden" asp-for="Input.Id" />
+        <div class="card-title">
+            <h2>@(Model.Input.Id is null or 0 ? "New class" : "Edit class")</h2>
+            @if (Model.Input.Id is not null and not 0)
+            {
+                <a class="btn ghost" asp-page="/Offerings/Manage">New</a>
+            }
+        </div>
+
+        <div class="field">
+            <label asp-for="Input.CourseId">Course</label>
+            <select asp-for="Input.CourseId">
+                <option value="">Choose course</option>
+                @foreach (var course in Model.Courses)
+                {
+                    <option value="@course.Id">@course.Code - @course.Title</option>
+                }
+            </select>
+            <span asp-validation-for="Input.CourseId"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="Input.TermId">Term</label>
+            <select asp-for="Input.TermId">
+                <option value="">Choose term</option>
+                @foreach (var term in Model.Terms)
+                {
+                    <option value="@term.Id">@term.Name</option>
+                }
+            </select>
+            <span asp-validation-for="Input.TermId"></span>
+        </div>
+
+        @if (Model.IsAdmin)
+        {
+            <div class="field">
+                <label asp-for="Input.TeacherId">Teacher</label>
+                <select asp-for="Input.TeacherId">
+                    <option value="">Choose teacher</option>
+                    @foreach (var teacher in Model.Teachers)
+                    {
+                        <option value="@teacher.Id">@teacher.FullName</option>
+                    }
+                </select>
+                <span asp-validation-for="Input.TeacherId"></span>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="Input.TeacherId" />
+        }
+
+        <div class="form-grid">
+            <div class="field">
+                <label asp-for="Input.Room">Room</label>
+                <input asp-for="Input.Room" />
+                <span asp-validation-for="Input.Room"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Input.Capacity">Capacity</label>
+                <input asp-for="Input.Capacity" type="number" min="1" max="500" />
+                <span asp-validation-for="Input.Capacity"></span>
+            </div>
+        </div>
+
+        <div class="field">
+            <label asp-for="Input.Notes">Teacher notes</label>
+            <textarea asp-for="Input.Notes" rows="5" maxlength="1000"></textarea>
+            <span asp-validation-for="Input.Notes"></span>
+        </div>
+
+        <button class="btn" type="submit">Save class</button>
+    </form>
+
+    <div class="class-list">
+        @if (Model.OfferingDetails.Count == 0)
+        {
+            <div class="empty-panel">No classes to manage yet.</div>
+        }
+        else
+        {
+            @foreach (var item in Model.OfferingDetails)
+            {
+                <article class="class-card">
+                    <div>
+                        <span class="badge muted">@item.TermName</span>
+                        <h2>@item.CourseCode - @item.CourseTitle</h2>
+                        <p>@item.TeacherName, @item.Room</p>
+                        @if (!string.IsNullOrWhiteSpace(item.Notes))
+                        {
+                            <p class="note-preview">@item.Notes</p>
+                        }
+                    </div>
+                    <div class="class-actions">
+                        <a class="btn ghost" asp-page="/Offerings/Details" asp-route-id="@item.Id">Open</a>
+                        <a class="btn ghost" asp-page="/Offerings/Manage" asp-route-editId="@item.Id">Edit</a>
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id">
+                            <button class="btn danger" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </article>
+            }
+        }
+    </div>
+</section>
