@@ -2,11 +2,11 @@
     var nav = new List<(string Page, string Label)>
     {
         ("/Index", "Dashboard"),
-        ("/Offerings/Index", "Schedule")
+        ("/Offerings/Index", "Classes")
     };
     if (User.IsInRole("Administrator") || User.IsInRole("Teacher"))
     {
-        nav.Add(("/Offerings/Manage", "Classes"));
+        nav.Add(("/Offerings/Manage", "Manage classes"));
         nav.Add(("/Students/Index", "Students"));
     }
     else if (User.IsInRole("Student"))
@@ -42,7 +42,7 @@
             <nav class="nav">
                 @foreach (var item in nav)
                 {
-                    <a asp-page="@item.Page" class="nav-link @(IsActive(item.Page) ? "active" : null)">@item.Label</a>
+                    <a asp-page="@item.Page" class="nav-link @(IsActive(item.Page) ? "active" : null)" aria-current="@(IsActive(item.Page) ? "page" : null)">@item.Label</a>
                 }
             </nav>
             @if (User.Identity?.IsAuthenticated == true)

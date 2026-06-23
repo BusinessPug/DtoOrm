@@ -84,10 +84,12 @@ public sealed class ManageModel : ApiPageModel
         if (Input.Id is null or 0)
         {
             await _api.CreateOfferingAsync(request, cancellationToken);
+            TempData["StatusMessage"] = "Class created.";
         }
         else
         {
             await _api.UpdateOfferingAsync(Input.Id.Value, request, cancellationToken);
+            TempData["StatusMessage"] = "Class updated.";
         }
 
         return RedirectToPage("/Offerings/Manage");
@@ -101,6 +103,7 @@ public sealed class ManageModel : ApiPageModel
         }
 
         await _api.DeleteOfferingAsync(id, cancellationToken);
+        TempData["StatusMessage"] = "Class deleted.";
         return RedirectToPage("/Offerings/Manage");
     }
 

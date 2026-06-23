@@ -14,5 +14,6 @@
     <Compile Remove="DepartmentEndpointNonFunctionalTestsLive/**/*.cs" />
     <Compile Remove="DepartmentEndpointTestsLive/**/*.cs" />
     <Compile Remove="DepartmentTestsLive/**/*.cs" />
+    <Compile Remove="PerformanceReportsLive/**/*.cs" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,7 @@
 using System.Diagnostics;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using DtoOrm.Api.Features.Auth;
 using Xunit;
 using Xunit.Sdk;
 
@@ -14,6 +17,39 @@ public sealed class LiveApiFixture : IAsyncLifetime
         ?? "Server=localhost;Port=3306;Database=dtoorm_demo;User Id=dtoorm;Password=dtoorm;AllowPublicKeyRetrieval=true;SslMode=None";
 
     public HttpClient CreateClient() => new() { BaseAddress = ApiBaseUri };
+
+    public async Task<HttpClient> CreateAuthenticatedClientAsync()
+    {
+        var client = CreateClient();
+
+        try
+        {
+            using var response = await client.PostAsJsonAsync(
+                "/api/auth/login",
+                new LoginRequest("admin", "School123!")).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                throw new XunitException(
+                    $"Login failed with {(int)response.StatusCode} {response.StatusCode}.{Environment.NewLine}{body}");
+            }
+
+            var login = await response.Content.ReadFromJsonAsync<LoginResponse>().ConfigureAwait(false);
+            if (login is null || string.IsNullOrWhiteSpace(login.AccessToken))
+            {
+                throw new XunitException("Login succeeded, but the response did not contain an access token.");
+            }
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", login.AccessToken);
+            return client;
+        }
+        catch
+        {
+            client.Dispose();
+            throw;
+        }
+    }
 
     public async Task InitializeAsync()
     {

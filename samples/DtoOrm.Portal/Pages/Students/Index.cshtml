@@ -15,7 +15,8 @@
 <form method="get" class="toolbar">
     <div class="field">
         <label for="Search">Last name starts with</label>
-        <input type="search" id="Search" name="Search" value="@Model.Search" placeholder="e.g. Han" />
+        <input type="search" id="Search" name="Search" value="@Model.Search" placeholder="e.g. Han" aria-describedby="student-search-help" />
+        <small id="student-search-help" class="form-help">Leave empty to show all students for the selected status.</small>
     </div>
     <div class="field">
         <label for="Status">Status</label>

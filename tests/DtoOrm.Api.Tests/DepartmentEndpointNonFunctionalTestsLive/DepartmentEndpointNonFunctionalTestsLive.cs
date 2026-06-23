@@ -22,7 +22,7 @@ public sealed class DepartmentEndpointNonFunctionalTestsLive
     [Trait("Category", "NonFunctional")]
     public async Task Read_interactions_are_fast_and_consistent_across_repeated_live_calls()
     {
-        using var client = _fixture.CreateClient();
+        using var client = await _fixture.CreateAuthenticatedClientAsync();
 
         var scenario = await MeasureAsync(async () =>
         {
@@ -55,7 +55,7 @@ public sealed class DepartmentEndpointNonFunctionalTestsLive
     [Trait("Category", "NonFunctional")]
     public async Task Mutation_lifecycle_is_fast_and_consistent_against_live_api()
     {
-        using var client = _fixture.CreateClient();
+        using var client = await _fixture.CreateAuthenticatedClientAsync();
         var rollback = new DepartmentRollback(_fixture.DatabaseConnectionString);
         var originalCode = NewDepartmentCode();
         var updatedCode = NewDepartmentCode();

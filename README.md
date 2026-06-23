@@ -274,6 +274,19 @@ Handy `start-all.ps1` switches:
 | `-SkipBuild` | Skip the upfront build (each app still builds on `dotnet run`). |
 | `-NoBrowser` | Don't open the browser at the end. |
 
+### Generate the API performance report
+
+Once the sample stack is running, the live API test suite can produce a performance report for the school API:
+
+```powershell
+dotnet test tests/DtoOrm.Api.Tests/DtoOrm.Api.Tests.csproj --no-restore /p:RunLiveApiTests=true --filter "FullyQualifiedName~PerformanceReportsLive"
+```
+
+The test writes:
+
+- `artifacts/performance/api-performance-results.csv` - semicolon-separated summary rows with `Navn`, `Endpoint`, `Brugere`, `Loop`, `Requests`, `Average ms`, `Max ms`, `Throughput/s`, and `Error %`.
+- `artifacts/performance/api-performance-report.docx` - a Word report that maps the measured rows into the performance-test exercises, including endpoint comparison, pagination, bottleneck notes, and optimization suggestions.
+
 > Prefer to start things by hand? Run them in this order from the repo root:
 > `docker compose -f samples/docker-compose.yml --project-directory . up -d`, then
 > `dotnet run --project samples/DtoOrm.Api`, then `dotnet run --project samples/DtoOrm.Portal`.

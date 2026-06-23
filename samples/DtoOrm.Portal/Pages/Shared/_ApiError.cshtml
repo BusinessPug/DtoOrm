@@ -3,6 +3,10 @@
 {
     <div class="alert" role="alert">
         <span class="alert-icon">!</span>
-        <span>@Model</span>
+        <span>
+            <strong>Something could not be loaded.</strong>
+            @Model
+            <a asp-page="/Index">Return to dashboard</a> and try again.
+        </span>
     </div>
 }

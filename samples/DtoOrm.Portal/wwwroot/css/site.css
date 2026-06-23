@@ -441,7 +441,7 @@ main.container {
 }
 
 .section-grid {
-    display: inline;
+    display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
     gap: 24px;
     margin-bottom: 2rem;
@@ -775,7 +775,7 @@ select:focus {
 }
 
 .form-grid {
-    display: inline;
+    display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
 }
@@ -846,6 +846,83 @@ select:focus {
     display: grid;
     gap: 14px;
     margin-top: 20px;
+}
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.form-help {
+    color: var(--muted);
+    margin: 0;
+    font-size: 0.86rem;
+}
+
+.field span {
+    color: var(--red);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.alert a {
+    color: inherit;
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.alert.success {
+    background: var(--green-soft);
+    border-color: #a8d6bb;
+    color: var(--green);
+}
+
+.alert-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: currentColor;
+    color: var(--surface);
+    font-weight: 900;
+    line-height: 1;
+}
+
+.delete-confirm {
+    position: relative;
+}
+
+.delete-confirm summary {
+    list-style: none;
+}
+
+.delete-confirm summary::-webkit-details-marker {
+    display: none;
+}
+
+.delete-confirm[open] {
+    display: grid;
+    gap: 8px;
+    min-width: 180px;
+}
+
+.delete-confirm p {
+    margin: 0;
+    color: var(--red);
+    font-size: 0.84rem;
+    font-weight: 700;
 }
 
 .demo-users h2 {

@@ -15,7 +15,7 @@ public sealed class DepartmentEndpointTestsLive
     [Fact]
     public async Task List_departments_returns_seeded_rows_from_live_api()
     {
-        using var client = _fixture.CreateClient();
+        using var client = await _fixture.CreateAuthenticatedClientAsync();
 
         var departments = await client.GetFromJsonAsync<List<DepartmentDto>>("/api/departments/");
 
@@ -27,7 +27,7 @@ public sealed class DepartmentEndpointTestsLive
     [Fact]
     public async Task Get_department_returns_not_found_for_missing_live_row()
     {
-        using var client = _fixture.CreateClient();
+        using var client = await _fixture.CreateAuthenticatedClientAsync();
 
         var response = await client.GetAsync("/api/departments/2147483647");
 
@@ -37,7 +37,7 @@ public sealed class DepartmentEndpointTestsLive
     [Fact]
     public async Task Create_department_returns_created_and_can_be_fetched_from_live_api()
     {
-        using var client = _fixture.CreateClient();
+        using var client = await _fixture.CreateAuthenticatedClientAsync();
         var rollback = new DepartmentRollback(_fixture.DatabaseConnectionString);
         var code = NewDepartmentCode();
         rollback.TrackCode(code);
@@ -71,7 +71,7 @@ public sealed class DepartmentEndpointTestsLive
     [Fact]
     public async Task Update_department_uses_route_id_and_persists_live_change()
     {
-        using var client = _fixture.CreateClient();
+        using var client = await _fixture.CreateAuthenticatedClientAsync();
         var rollback = new DepartmentRollback(_fixture.DatabaseConnectionString);
         var originalCode = NewDepartmentCode();
         var updatedCode = NewDepartmentCode();
@@ -110,7 +110,7 @@ public sealed class DepartmentEndpointTestsLive
     [Fact]
     public async Task Delete_department_removes_created_live_row()
     {
-        using var client = _fixture.CreateClient();
+        using var client = await _fixture.CreateAuthenticatedClientAsync();
         var rollback = new DepartmentRollback(_fixture.DatabaseConnectionString);
         var code = NewDepartmentCode();
         rollback.TrackCode(code);

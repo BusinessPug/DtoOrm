@@ -2,6 +2,7 @@
 @model DtoOrm.Portal.Pages.Offerings.ManageModel
 @{
     ViewData["Title"] = "Classes";
+    var statusMessage = TempData["StatusMessage"] as string;
 }
 
 <div class="page-head compact">
@@ -11,6 +12,7 @@
 </div>
 
 <partial name="_ApiError" model="Model.ApiError" />
+<partial name="_StatusMessage" model="statusMessage" />
 
 <section class="workbench">
     <form method="post" asp-page-handler="Save" class="card class-form">
@@ -19,9 +21,10 @@
             <h2>@(Model.Input.Id is null or 0 ? "New class" : "Edit class")</h2>
             @if (Model.Input.Id is not null and not 0)
             {
-                <a class="btn ghost" asp-page="/Offerings/Manage">New</a>
+                <a class="btn ghost" asp-page="/Offerings/Manage">Cancel edit</a>
             }
         </div>
+        <p class="form-help">Choose the course, term, room, and capacity before saving. Teacher accounts are automatically assigned to their own classes.</p>
 
         <div class="field">
             <label asp-for="Input.CourseId">Course</label>
@@ -69,23 +72,29 @@
         <div class="form-grid">
             <div class="field">
                 <label asp-for="Input.Room">Room</label>
-                <input asp-for="Input.Room" />
+                <input asp-for="Input.Room" maxlength="50" aria-describedby="room-help" />
+                <small id="room-help" class="form-help">Use a short room name, for example CS-Lab-1.</small>
                 <span asp-validation-for="Input.Room"></span>
             </div>
             <div class="field">
                 <label asp-for="Input.Capacity">Capacity</label>
-                <input asp-for="Input.Capacity" type="number" min="1" max="500" />
+                <input asp-for="Input.Capacity" type="number" min="1" max="500" aria-describedby="capacity-help" />
+                <small id="capacity-help" class="form-help">Allowed range: 1 to 500 seats.</small>
                 <span asp-validation-for="Input.Capacity"></span>
             </div>
         </div>
 
         <div class="field">
             <label asp-for="Input.Notes">Teacher notes</label>
-            <textarea asp-for="Input.Notes" rows="5" maxlength="1000"></textarea>
+            <textarea asp-for="Input.Notes" rows="5" maxlength="1000" aria-describedby="notes-help"></textarea>
+            <small id="notes-help" class="form-help">Optional note shown on the class details page.</small>
             <span asp-validation-for="Input.Notes"></span>
         </div>
 
-        <button class="btn" type="submit">Save class</button>
+        <div class="form-actions">
+            <button class="btn" type="submit">Save class</button>
+            <a class="btn ghost" asp-page="/Offerings/Index">Back to classes</a>
+        </div>
     </form>
 
     <div class="class-list">
@@ -110,9 +119,13 @@
                     <div class="class-actions">
                         <a class="btn ghost" asp-page="/Offerings/Details" asp-route-id="@item.Id">Open</a>
                         <a class="btn ghost" asp-page="/Offerings/Manage" asp-route-editId="@item.Id">Edit</a>
-                        <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id">
-                            <button class="btn danger" type="submit">Delete</button>
-                        </form>
+                        <details class="delete-confirm">
+                            <summary class="btn danger">Delete</summary>
+                            <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id">
+                                <p>Deleting this class cannot be undone.</p>
+                                <button class="btn danger" type="submit">Confirm delete</button>
+                            </form>
+                        </details>
                     </div>
                 </article>
             }
